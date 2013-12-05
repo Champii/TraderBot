@@ -17,3 +17,5 @@ node_modules
 nonce.json
 traderbot.sublime-project
 traderbot.sublime-workspace
+
+config
