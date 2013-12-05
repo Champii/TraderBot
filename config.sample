@@ -3,8 +3,8 @@ module.exports = {
   {
     api:
     {
-      key: "DK9OR2S1-3AWOMU1F-D7FH5D16-W9YWVR4Q-59K7BH04",
-      secret: "30adcb3f54a87e50951042f14c805d275c21b03650bfd18b6ba00b71a5cbc5dc"
+      key: "",
+      secret: ""
     },
     simu: true,
     tick: 2000,
