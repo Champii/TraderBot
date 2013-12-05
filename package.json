@@ -1,0 +1,11 @@
+{
+  "name": "traderbot",
+  "version": "0.0.1",
+  "dependencies": {
+    "settings": "*",
+    "ncurses": "*",
+    "btc-e": "*",
+    "coffee-script": "*",
+    "async": "*"
+  }
+}
