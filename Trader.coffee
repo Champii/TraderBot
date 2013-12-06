@@ -4,7 +4,7 @@ config = new Settings require './config'
 windowManager = require './WindowManager'
 
 thresholdUp = 0.1
-thresholdDown = 0.01
+thresholdDown = 0.1
 lastEma = 0
 nbEma = 0
 startUsd = 0
@@ -30,7 +30,7 @@ class Trader
     sma = 0
     if nbEma < 10
       nbEma++
-      startUsd = balances.funds.usd
+      startUsd = balances.funds.usd + balances.funds.ltc * data.last
       for value in @lastTen
         sma += value
 
@@ -53,7 +53,8 @@ class Trader
         @Buy data, balances if !lastIsBuy
         opEma = ema
       else if ema - opEma < -thresholdDown
-        @Sell data, balances if lastIsBuy
+        gain = balances.funds.ltc * data.last - startUsd
+        @Sell data, balances if lastIsBuy and gain > 0
         opEma = ema
 
 
@@ -65,7 +66,7 @@ class Trader
       windowManager.PrintGain {startUsd: startUsd, gain: gain}
 
 
-  AddTrade: (order, amount, price, curPrice) ->
+  LogTrade: (order, amount, price, curPrice) ->
     if @trades.length > 10
       @trades.shift()
     @trades.push
@@ -81,7 +82,7 @@ class Trader
   Buy: (currentPrice, balances) ->
     if config.simu
       ltc = balances.funds.usd / currentPrice.last
-      @AddTrade 'Buy', ltc, balances.funds.usd, currentPrice.last
+      @LogTrade 'Buy', ltc, balances.funds.usd, currentPrice.last
       balances.funds.ltc += ltc
       balances.funds.usd -= balances.funds.usd
       windowManager.PrintError 'Bougth : ' + ltc
@@ -98,7 +99,7 @@ class Trader
   Sell: (currentPrice, balances) ->
     if config.simu
       usd = balances.funds.ltc * currentPrice.last
-      @AddTrade 'Sell', balances.funds.ltc, usd, currentPrice.last
+      @LogTrade 'Sell', balances.funds.ltc, usd, currentPrice.last
       balances.funds.ltc -= balances.funds.ltc
       balances.funds.usd += usd
       windowManager.PrintError 'Sold : ' + usd
