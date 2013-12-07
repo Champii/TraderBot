@@ -5,22 +5,55 @@ windowManager = require './WindowManager'
 
 thresholdUp = 0.1
 thresholdDown = 0.1
+ema = 0
 lastEma = 0
 nbEma = 0
 startUsd = 0
 gain = 0
 lastIsBuy = false
-
 opEma = 0
 
 class Trader
 
+  public: null
+  trade: null
+
   lastTen: null
   trades: null
 
-  constructor: ->
+  rangeStart:null
+
+  ticker: null
+
+  constructor: (@public, @trade, @ticker) ->
     @lastTen = []
     @trades = []
+    @rangeStart = 0
+
+  RangeAlgo: (data, balances) ->
+    if ema <= opEma - config.range
+      @Buy data, balances if !lastIsBuy
+      opEma = ema
+    else if ema >= opEma + config.range
+      @Sell data, balances if lastIsBuy
+      opEma = ema
+
+  MaketAlgo: (data, balances)->
+
+    diff = ema - opEma
+    if diff > 0
+      if lastIsBuy
+        thresholdDown = 0.05
+      else
+        @Buy data, balances
+      opEma = ema
+    else if diff < 0
+      gain = balances.funds.ltc * data.last - startUsd
+      if lastIsBuy and gain >= 0
+        @Sell data, balances
+      else
+        thresholdUp = 0.1
+      opEma = ema
 
   Update: (data, balances) ->
     if @lastTen.length > 10
@@ -41,30 +74,21 @@ class Trader
 
     ema = (data.last - lastEma) * multi + lastEma
 
-    lastEma = ema
-
-    windowManager.PrintError 'Debug : ' + ema.toFixed(2) + ' ' + opEma
-
     if opEma is 0 and nbEma < 10
       opEma = ema
 
+    windowManager.PrintError 'Debug : ' + ema.toFixed(2) + ' ' + opEma
+
     if nbEma >= 10
-      if ema - opEma > thresholdUp
-        @Buy data, balances if !lastIsBuy
-        opEma = ema
-      else if ema - opEma < -thresholdDown
-        gain = balances.funds.ltc * data.last - startUsd
-        @Sell data, balances if lastIsBuy and gain > 0
-        opEma = ema
+      @RangeAlgo data, balances if config.algo is 'range'
+      @MarketAlgo data, balances if config.algo is 'market'
 
 
-      if !lastIsBuy
-        gain = balances.funds.usd - startUsd
-      else
-        gain = balances.funds.ltc * data.last - startUsd
+    gain = balances.funds.ltc * data.last + balances.funds.usd - startUsd
 
-      windowManager.PrintGain {startUsd: startUsd, gain: gain}
+    windowManager.PrintGain {startUsd: startUsd, gain: gain}
 
+    lastEma = ema
 
   LogTrade: (order, amount, price, curPrice) ->
     if @trades.length > 10
@@ -89,8 +113,14 @@ class Trader
       lastIsBuy = true
       # @first = currentPrice.last
     else
-      1
-
+      amount = balances.funds.usd / currentPrice.last
+      amount = (amount.toFixed 2) - 0.01
+      @trade.trade 'ltc_usd', 'buy', currentPrice.last, amount, (err, data) =>
+        if err
+          return windowManager.PrintError err
+        windowManager.PrintError 'Bought: ' + data.return.funds.ltc + 'ltc'
+        lastIsBuy = true
+        @ticker.emit 'updateUserInfo'
 
     windowManager.PrintUserInfo balances
 
@@ -106,7 +136,13 @@ class Trader
       lastIsBuy = false
       # @first = currentPrice.last
     else
-      1
+      windowManager.PrintError 'Price: ' + currentPrice.last + ' ' + balances.funds.ltc
+      @trade.trade 'ltc_usd', 'sell', currentPrice.last, balances.funds.ltc, (err, data) =>
+        if err
+          return windowManager.PrintError err
+        windowManager.PrintError 'Sold: ' + data.return.funds.usd + 'usd'
+        lastIsBuy = false
+        @ticker.emit 'updateUserInfo'
 
     windowManager.PrintUserInfo balances
 
