@@ -25,6 +25,7 @@ class WindowManager
     @AddWindow 'CurrentPairValue', minWinH, 30, nc.lines - maxWinH, 31
     @AddWindow 'LastTrade', minWinH, 50, nc.lines - maxWinH, 61
     @AddWindow 'Gains', minWinH, 30, Math.floor(nc.lines / 3), 1
+    @AddWindow 'ActiveOrders', minWinH, 50, nc.lines - (maxWinH * 2), 61
 
     @wins['TraderBot'].Refresh()
 
@@ -49,9 +50,18 @@ class WindowManager
 
   PrintLastTrade: (infos) ->
     @wins['LastTrade'].Clear()
-    for value in infos
-      @wins['LastTrade'].AddRow value.order + ': ' + value.amount + 'ltc for ' + value.price + 'usd (1ltc = ' + value.curPrice + 'usd)'
-      # @wins['LastTrade'].AddRow key + ': ' + value.amount + ' ' + value.currency + ' -> ' + value.desc
+    for key, value of infos
+      str = key + ': ' + value.type + ' : ' + value.amount + 'ltc for ' + value.rate + 'usd'
+      str += ' (' + value.price + ')' if value.price?
+      @wins['LastTrade'].AddRow str
+    # @wins['LastTrade'].Clear()
+    # for value in infos
+    #   @wins['LastTrade'].AddRow value.order + ': ' + value.amount + 'ltc for ' + value.price + 'usd (1ltc = ' + value.curPrice + 'usd)'
+
+  PrintActiveOrders: (infos) ->
+    @wins['ActiveOrders'].Clear()
+    for key, value of infos
+      @wins['ActiveOrders'].AddRow key + ': ' + value.type + ': ' + value.amount + 'ltc for ' + value.rate + 'usd'
 
   PrintGain: (infos) ->
     @wins['Gains'].Clear()

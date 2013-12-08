@@ -1,7 +1,10 @@
+async = require 'async'
 Settings = require 'settings'
 
 config = new Settings require './config'
 windowManager = require './WindowManager'
+bus = require './Bus'
+
 
 thresholdUp = 0.1
 thresholdDown = 0.1
@@ -23,19 +26,24 @@ class Trader
 
   rangeStart:null
 
-  ticker: null
-
-  constructor: (@public, @trade, @ticker) ->
+  constructor: (@public, @trade) ->
     @lastTen = []
     @trades = []
     @rangeStart = 0
 
+    bus.on 'cancelOrder', (id, order) =>
+      if order.type is 'sell'
+        lastIsBuy = true
+      else
+        lastIsBuy = false
+      windowManager.PrintError 'Current state : ' + lastIsBuy
+
   RangeAlgo: (data, balances) ->
-    if ema <= opEma - config.range
-      @Buy data, balances if !lastIsBuy
-      opEma = ema
-    else if ema >= opEma + config.range
+    if ema <= opEma - config.range.down
       @Sell data, balances if lastIsBuy
+      opEma = ema
+    else if ema >= opEma + config.range.up
+      @Buy data, balances if !lastIsBuy
       opEma = ema
 
   MaketAlgo: (data, balances)->
@@ -74,7 +82,7 @@ class Trader
 
     ema = (data.last - lastEma) * multi + lastEma
 
-    if opEma is 0 and nbEma < 10
+    if opEma is 0 and nbEma == 10
       opEma = ema
 
     windowManager.PrintError 'Debug : ' + ema.toFixed(2) + ' ' + opEma
@@ -90,14 +98,15 @@ class Trader
 
     lastEma = ema
 
-  LogTrade: (order, amount, price, curPrice) ->
+  LogTrade: (type, amount, price, rate) ->
     if @trades.length > 10
       @trades.shift()
+
     @trades.push
-      order: order
+      type: '' + type
       amount: amount.toFixed 2
+      rate: rate.toFixed 2
       price: price.toFixed 2
-      curPrice: curPrice.toFixed 2
 
     windowManager.PrintLastTrade @trades
 
@@ -105,45 +114,77 @@ class Trader
   # Buy Ltc
   Buy: (currentPrice, balances) ->
     if config.simu
-      ltc = balances.funds.usd / currentPrice.last
-      @LogTrade 'Buy', ltc, balances.funds.usd, currentPrice.last
+      ltc = balances.funds.usd / currentPrice.buy
+      @LogTrade 'Buy', ltc, balances.funds.usd, currentPrice.buy
       balances.funds.ltc += ltc
       balances.funds.usd -= balances.funds.usd
       windowManager.PrintError 'Bougth : ' + ltc
       lastIsBuy = true
       # @first = currentPrice.last
+      windowManager.PrintUserInfo balances
     else
-      amount = balances.funds.usd / currentPrice.last
-      amount = (amount.toFixed 2) - 0.01
-      @trade.trade 'ltc_usd', 'buy', currentPrice.last, amount, (err, data) =>
-        if err
-          return windowManager.PrintError err
-        windowManager.PrintError 'Bought: ' + data.return.funds.ltc + 'ltc'
-        lastIsBuy = true
-        @ticker.emit 'updateUserInfo'
+      async.auto
+        userInfos: (done) =>
+          bus.emit 'updateUserInfo', done
 
-    windowManager.PrintUserInfo balances
+        trade: ['userInfos', (done, results) =>
+          if !results.userInfos.open_orders
+            amount = results.userInfos.funds.usd / currentPrice.buy
+            amount = (amount.toFixed 2) - 0.01
+            windowManager.PrintError 'Price Buy: ' + currentPrice.buy + ' ' + amount
+
+            @trade.trade 'ltc_usd', 'buy', currentPrice.buy, amount, done
+          else
+            done 'Existing order : exit'
+
+        ]
+      , (err, results) =>
+        if err
+          # @ticker.emit 'updateActiveOrder'
+          return windowManager.PrintError err
+
+        windowManager.PrintError 'Bought: ' + results.trade.funds.ltc + 'ltc'
+        lastIsBuy = false
+        # @ticker.emit 'updateActiveOrder'
+        # @ticker.emit 'updateUserInfo'
+        bus.emit 'updateLastTrade'
 
 
   # Sell Ltc
   Sell: (currentPrice, balances) ->
     if config.simu
-      usd = balances.funds.ltc * currentPrice.last
-      @LogTrade 'Sell', balances.funds.ltc, usd, currentPrice.last
+      usd = balances.funds.ltc * currentPrice.sell
+      @LogTrade 'Sell', balances.funds.ltc, usd, currentPrice.sell
       balances.funds.ltc -= balances.funds.ltc
       balances.funds.usd += usd
       windowManager.PrintError 'Sold : ' + usd
       lastIsBuy = false
+      windowManager.PrintUserInfo balances
       # @first = currentPrice.last
     else
-      windowManager.PrintError 'Price: ' + currentPrice.last + ' ' + balances.funds.ltc
-      @trade.trade 'ltc_usd', 'sell', currentPrice.last, balances.funds.ltc, (err, data) =>
-        if err
-          return windowManager.PrintError err
-        windowManager.PrintError 'Sold: ' + data.return.funds.usd + 'usd'
-        lastIsBuy = false
-        @ticker.emit 'updateUserInfo'
+      async.auto
+        userInfos: (done) =>
+          bus.emit 'updateUserInfo', done
 
-    windowManager.PrintUserInfo balances
+        trade: ['userInfos', (done, results) =>
+          if !results.userInfos.open_orders
+            amount = (results.userInfos.funds.ltc.toFixed 2) - 0.01
+            windowManager.PrintError 'Price Sell: ' + currentPrice.sell + ' ' + amount
+
+            @trade.trade 'ltc_usd', 'sell', currentPrice.sell, amount, done
+          else
+            done 'Existing order : exit'
+        ]
+      , (err, results) =>
+        if err
+          # @ticker.emit 'updateActiveOrder'
+          return windowManager.PrintError err
+
+        windowManager.PrintError 'Sold: ' + results.trade.funds.usd + 'usd'
+        lastIsBuy = false
+        # @ticker.emit 'updateActiveOrder'
+        # @ticker.emit 'updateUserInfo'
+        bus.emit 'updateLastTrade'
+
 
 module.exports = Trader
