@@ -1,9 +1,9 @@
 async = require 'async'
 Settings = require 'settings'
 
-config = new Settings require './config'
+config = new Settings require '../../settings/config'
 windowManager = require './WindowManager'
-bus = require './Bus'
+bus = require '../bus'
 
 
 thresholdUp = 0.1
@@ -44,6 +44,9 @@ class Trader
       opEma = ema
     else if ema >= opEma + config.range.up
       @Buy data, balances if !lastIsBuy
+      opEma = ema
+
+    if ema > opEma and lastIsBuy
       opEma = ema
 
   MaketAlgo: (data, balances)->

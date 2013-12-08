@@ -3,7 +3,7 @@ BTCE = require 'btc-e'
 Settings = require 'settings'
 
 Ticker = require './Ticker'
-config = new Settings require './config'
+config = new Settings require '../../settings/config'
 
 printError = (err) ->
   console.error 'ERROR', err

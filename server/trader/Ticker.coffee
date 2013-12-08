@@ -1,10 +1,10 @@
 async = require 'async'
 Settings = require 'settings'
 
-config = new Settings require './config'
+config = new Settings require '../../settings/config'
 Trader = require './Trader'
 windowManager = require './WindowManager'
-bus = require './Bus'
+bus = require '../bus'
 
 
 printError = (err) ->
@@ -104,7 +104,7 @@ class Ticker
     @tickerInt = setInterval =>
       action = @queue.pop()
       action() if action?
-    , config.tick / 2
+    , 1000
 
     setInterval =>
       @queue.push =>

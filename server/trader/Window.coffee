@@ -1,7 +1,7 @@
 nc = require 'ncurses'
 Settings = require 'settings'
 
-config = new Settings require './config'
+config = new Settings require '../../settings/config'
 
 minWinH = config.minWinH
 maxWinH = config.maxWinH

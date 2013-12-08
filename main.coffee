@@ -1,7 +1,11 @@
-TraderBot = require './TraderBot'
+server = require './server/util/server'
 
-bot = new TraderBot
+server.makeServer()
 
-bot.Run()
+# TraderBot = require './server/trader/TraderBot'
+
+# bot = new TraderBot
+
+# bot.Run()
 
 

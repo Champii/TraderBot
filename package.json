@@ -6,6 +6,11 @@
     "ncurses": "*",
     "btc-e": "*",
     "coffee-script": "*",
-    "async": "*"
+    "async": "*",
+    "express": "*",
+    "node-mysql": "*",
+    "underscore": "*",
+    "jade": "*",
+    "connect-cachify": "*"
   }
 }
