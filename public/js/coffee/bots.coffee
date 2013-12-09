@@ -1,37 +1,51 @@
-traderbot.service 'bots', [
+traderbot.service 'botsService', [
   '$http'
-  ($http) ->
+  'socket'
+  ($http, socket) ->
+
     @Fetch = ->
       $http.get('/api/1/bots')
-        .success (data) ->
-          console.log data
-        .error (data) ->
-          console.log data
+        .success (data) =>
+          @all = data
 
-    @Init = =>
+        .error (data) ->
+
+    @Init = ->
       @all = []
       @Fetch()
 
+    socket.on 'newBot', (bot) =>
+      @all.push bot
+
     @Init()
+
+    return @
 ]
 
 traderbot.directive 'tbBots', [
   '$http'
-  'bots'
-  ($http, bots) ->
+  'botsService'
+  ($http, botsService) ->
     return {
       restrict: 'E'
 
-      replace: false
+      replace: true
 
       templateUrl: 'bots-tpl'
 
       link: (scope, element, attr) ->
-        scope.bots = bots
+        scope.bots = botsService
 
         scope.newName = ''
 
+        scope.debug = ->
+          console.log scope.bots
+
         scope.add = ->
+          $http.post('/api/1/bots', {name: scope.newName})
+            .success (data) ->
+              console.log data
+            .error (data) ->
 
 
     }]

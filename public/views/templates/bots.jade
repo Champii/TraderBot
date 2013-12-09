@@ -1,4 +1,9 @@
 div
+
+  #botList(ng-repeat="bot in bots.all")
+    |{{bot.name}}
+
   input(type="text", ng-model="newName")
-  button(ng-click="add")
+  button(ng-click="add()")
     | +
+

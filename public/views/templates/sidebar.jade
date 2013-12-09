@@ -1,0 +1,117 @@
+div
+  nav(class="navbar navbar-inverse navbar-fixed-top" role="navigation")
+    .navbar-header
+      button(type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse")
+        span.sr-only Toggle navigation
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+      a.navbar-brand(href="index.html") SB Admin
+
+    div(class="collapse navbar-collapse navbar-ex1-collapse")
+      ul.nav.navbar-nav.side-nav
+        li
+          a(href="index.html")
+            i.fa.fa-dashboard
+            | Dashboard
+
+        li(ng-repeat="bot in bots.all")
+          a(href="" ng-click="selectBot(bot.id)")
+            | {{bot.name}}
+        //- li
+        //-   a(href="charts.html")
+        //-     i.fa.fa-bar-chart-o
+        //-     | Charts
+        //- li
+        //-   a(href="tables.html")
+        //-     i.fa.fa-table
+        //-     | Tables
+        //- li
+        //-   a(href="forms.html")
+        //-     i.fa.fa-edit
+        //-     | Forms
+        //- li
+        //-   a(href="typography.html")
+        //-     i.fa.fa-font
+        //-     | Typography
+        //- li
+        //-   a(href="bootstrap-elements.html")
+        //-     i.fa.fa-desktop
+        //-     | Bootstrap Elements
+        //- li
+        //-   a(href="bootstrap-grid.html")
+        //-     i.fa.fa-wrench
+        //-     | Bootstrap Grid
+
+      ul.nav.navbar-nav.navbar-right.navbar-user
+        li.dropdown.messages-dropdown
+          a(href="#" class="dropdown-toggle" data-toggle="dropdown")
+            i.fa.fa-envelope Messages
+            span.badge
+              7
+            b.caret
+          ul.dropdown-menu
+            li.dropdown-header 7 New Messages
+            li.message-preview
+              a(href="#")
+                span.avatar
+                  img(src="http://placehold.it/50x50")
+                span.name John Smith:
+                span.message Hey there, I wanted to ask you something...
+                span.time
+                  i.fa.fa-clock-o
+                  | 4:34 PM
+            li.divider
+        li.dropdown.alerts-dropdown
+          a(href="#" class="dropdown-toggle" data-toggle="dropdown")
+            i.fa.fa-bell Alerts
+            span.badge 3
+            b.caret
+          ul.dropdown-menu
+            li
+              a(href="#")
+                | Default
+                span.label.label-default Default
+            li
+              a(href="#")
+                | Primary
+                span.label.label-primary Primary
+            li
+              a(href="#")
+                | Success
+                span.label.label-success Success
+            li
+              a(href="#")
+                | Info
+                span.label.label-info Info
+            li
+              a(href="#")
+                | Warning
+                span.label.label-warning Warning
+            li
+              a(href="#")
+                | Danger
+                span.label.label-danger Danger
+            li.divider
+            li
+              a(href="#") View All
+
+        li.dropdown.user-dropdown
+          a(href="#" class="dropdown-toggle" data-toggle="dropdown")
+            i.fa.fa-user John Smith
+            b.caret
+          ul.dropdown-menu
+            li
+              a(href="#")
+                i.fa.fa-user Profile
+            li
+              a(href="#")
+                i.fa.fa-envelope Inbox
+                span.badge 7
+            li
+              a(href="#")
+                i.fa.fa-gear Settings
+            li.divider
+            li
+              a(href="#")
+                i.fa.fa-power-off Log Out

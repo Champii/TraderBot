@@ -1,7 +1,11 @@
 {
   "/js/build/traderbot.min.js": [
+    "/js/lib/bootstrap/jquery-1.10.2.js",
+    "/js/lib/bootstrap/bootstrap.js",
     "/js/lib/angular.min.js",
     "/js/coffee/index.js",
-    "/js/coffee/bots.js"
+    "/js/coffee/socket.js",
+    "/js/coffee/bots.js",
+    "/js/coffee/sidebar.js"
   ]
 }

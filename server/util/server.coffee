@@ -8,6 +8,7 @@ coffeeMiddleware = require 'coffee-middleware'
 config = new Settings require '../../settings/config'
 routes = require '../routes'
 assets = require '../../settings/assets.json'
+sockets = require '../socket/socket'
 
 app = null
 
@@ -40,6 +41,8 @@ exports.makeServer = () ->
 
   app.use(express.static(path.resolve(traderRoot, 'public')));
 
+  app.use express.bodyParser()
+
   app.use app.router
 
   # app.use express.compress()
@@ -49,3 +52,5 @@ exports.makeServer = () ->
   server = http.createServer app
 
   server.listen 3000
+
+  sockets.init server

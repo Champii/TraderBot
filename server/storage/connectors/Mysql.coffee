@@ -1,6 +1,12 @@
 _ = require 'underscore'
 mysql = require 'mysql'
 
+connection = mysql.createConnection
+  host     : 'localhost'
+  user     : 'root'
+  password : '001127'
+  database : 'traderbot'
+
 class Mysql
 
   constructor: ->
@@ -16,7 +22,7 @@ class Mysql
     if (hasConditions)
       query += ' where ' + _(where).map(@_MakeSQLCondition).join(' and ');
 
-    mysql.query query, where, (err, rows) ->
+    connection.query query, where, (err, rows) ->
       return done err if err?
 
       done null, rows
@@ -24,7 +30,7 @@ class Mysql
   Insert: (table, fields, done) ->
     query = 'insert into ' + table + ' set ?'
 
-    mysql.query query, fields, (err, results) ->
+    connection.query query, fields, (err, results) ->
       return done err if err?
 
       done null, results.insertId
@@ -34,7 +40,7 @@ class Mysql
       return mysql.escapeId(key) + ' = ' + mysql.escape(value)
     ).join(' and ')
 
-    mysql.query query, fields, (err, results) ->
+    connection.query query, fields, (err, results) ->
       return done err if err?
 
       done null, results.affectedRows
