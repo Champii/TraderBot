@@ -1,6 +1,9 @@
 _ = require 'underscore'
 
 routes = [
+  'api'
+  'bots'
+  'api_404'
   'html']
   # 'api']
 

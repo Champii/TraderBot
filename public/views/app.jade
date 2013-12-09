@@ -1,8 +1,9 @@
 html
   head
     | !{cachify_js('/js/build/traderbot.min.js')}
-  body
-    | Hello !
+  body(ng-app="traderbot")
 
+    tb-bots#bots
 
-
+  script#bots-tpl(type="text/ng-template")
+    include templates/bots

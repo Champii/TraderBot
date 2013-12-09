@@ -1,5 +1,7 @@
 {
   "/js/build/traderbot.min.js": [
-    "/js/lib/angular.min.js"
+    "/js/lib/angular.min.js",
+    "/js/coffee/index.js",
+    "/js/coffee/bots.js"
   ]
 }

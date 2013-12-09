@@ -11,6 +11,9 @@
     "node-mysql": "*",
     "underscore": "*",
     "jade": "*",
-    "connect-cachify": "*"
+    "connect-cachify": "*",
+    "uglifyjs": "*",
+    "coffee-middleware": "*",
+    "mysql": "*"
   }
 }

@@ -1,0 +1,2 @@
+traderbot = angular.module 'traderbot', []
+
