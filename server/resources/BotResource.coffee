@@ -10,6 +10,14 @@ class BotResource
       @id = blob.id if blob.id?
       @name = blob.name if blob.name?
       @desc = blob.desc if blob.desc?
+      @market = blob.market || 'btce'
+      @pair = blob.pair || 'pair'
+      @algo = blob.algo || 'range'
+      @simu = blob.simu || 'simu'
+      @trades = blob.trades || []
+      @orders = blob.orders || []
+      @max_invest = blob.max_invest || 0
+      @active = blob.active || false
 
   Save: (done) ->
     exists = @id?
@@ -27,11 +35,16 @@ class BotResource
     id: @id
     name: @name
     desc: @desc
+    market: @market
+    pair: @pair
+    algo: @algo
+    simu: @simu
+    # trades: @trades
+    # orders: @orders
+    max_invest: @max_invest
 
   ToJSON: ->
-    id: @id
-    name: @name
-    desc: @desc
+    @Serialize()
 
   @Fetch: (id, done) ->
     botDb.Fetch id, (err, blob) =>

@@ -31,6 +31,7 @@ class Mysql
     query = 'insert into ' + table + ' set ?'
 
     connection.query query, fields, (err, results) ->
+      console.log err, results, fields
       return done err if err?
 
       done null, results.insertId

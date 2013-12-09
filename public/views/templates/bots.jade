@@ -1,9 +1,23 @@
 div
 
-  #botList(ng-repeat="bot in bots.all")
-    |{{bot.name}}
+  tb-input-text(ng-model="bots.current.id", ng-if="bots.current")
+  tb-input-text(ng-model="bots.current.name", ng-if="bots.current")
+  tb-input-text(ng-model="bots.current.market", ng-if="bots.current")
+  tb-input-text(ng-model="bots.current.pair", ng-if="bots.current")
+  tb-input-text(ng-model="bots.current.algo", ng-if="bots.current")
+  tb-input-text(ng-model="bots.current.simu", ng-if="bots.current")
+  tb-input-text(ng-model="bots.current.trades", ng-if="bots.current")
+  tb-input-text(ng-model="bots.current.orders", ng-if="bots.current")
+  tb-input-text(ng-model="bots.current.max_invest", ng-if="bots.current")
+  tb-input-text(ng-model="bots.current.active", ng-if="bots.current")
 
-  input(type="text", ng-model="newName")
-  button(ng-click="add()")
-    | +
-
+  {{bots.current.id}}
+  {{bots.current.name}}
+  {{bots.current.market}}
+  {{bots.current.pair}}
+  {{bots.current.algo}}
+  {{bots.current.simu}}
+  {{bots.current.trades}}
+  {{bots.current.orders}}
+  {{bots.current.max_invest}}
+  {{bots.current.active}}

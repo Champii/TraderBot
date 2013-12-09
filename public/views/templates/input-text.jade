@@ -1,0 +1,6 @@
+div
+
+  input#edit(type="text", ng-model="model", ng-show="isEditing")
+  span(ng-hide="isEditing", ng-click="toggleEdit()")
+    {{model}}
+
