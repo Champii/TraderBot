@@ -9,6 +9,8 @@
     "/js/coffee/socket.js",
     "/js/coffee/bots.js",
     "/js/coffee/sidebar.js",
-    "/js/coffee/input-text.js"
+    "/js/coffee/input-text.js",
+    "/js/coffee/toggle.js",
+    "/js/coffee/select.js"
   ]
 }

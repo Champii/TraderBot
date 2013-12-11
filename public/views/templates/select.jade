@@ -1,0 +1,7 @@
+div
+
+  select#edit(ng-model="value", ng-options="value for value in options", ng-show="isEditing")
+  span(ng-hide="isEditing")
+    {{value}}
+  a(href="", ng-click="toggleEdit()", ng-hide="disableEdit")
+    | ({{buttonLabel}})

@@ -1,6 +1,8 @@
 div
 
-  input#edit(type="text", ng-model="model", ng-show="isEditing")
-  span(ng-hide="isEditing", ng-click="toggleEdit()")
-    {{model}}
+  input#edit(type="text", ng-model="value", ng-show="isEditing")
+  span(ng-hide="isEditing")
+    {{value}}
+  a(href="", ng-click="toggleEdit()", ng-hide="disableEdit")
+    {{buttonLabel}}
 

@@ -1,21 +1,27 @@
-traderbot.directive 'tbInputText', [
-  ->
+selectCount = 0
+traderbot.directive 'tbSelect', [
+  '$http'
+  ($http) ->
     return {
       restrict: 'E'
 
       replace: true
 
-      templateUrl: 'input-text-tpl'
+      templateUrl: 'select-tpl'
 
       scope:
         disableEdit: '='
+        options: '='
         onSave: '='
         value: '='
 
       link: (scope, element, attr) ->
 
         scope.isEditing = false
+
         scope.buttonLabel = 'Edit'
+
+        scope.count = toggleCount++
 
         scope.toggleEdit = ->
           if scope.isEditing
@@ -24,7 +30,6 @@ traderbot.directive 'tbInputText', [
               scope.onSave scope.value
           else
             scope.buttonLabel = 'Save'
-
           scope.isEditing = !scope.isEditing
 
     }

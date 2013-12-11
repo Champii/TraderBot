@@ -1,23 +1,20 @@
 div
 
-  tb-input-text(ng-model="bots.current.id", ng-if="bots.current")
-  tb-input-text(ng-model="bots.current.name", ng-if="bots.current")
-  tb-input-text(ng-model="bots.current.market", ng-if="bots.current")
-  tb-input-text(ng-model="bots.current.pair", ng-if="bots.current")
-  tb-input-text(ng-model="bots.current.algo", ng-if="bots.current")
-  tb-input-text(ng-model="bots.current.simu", ng-if="bots.current")
-  tb-input-text(ng-model="bots.current.trades", ng-if="bots.current")
-  tb-input-text(ng-model="bots.current.orders", ng-if="bots.current")
-  tb-input-text(ng-model="bots.current.max_invest", ng-if="bots.current")
-  tb-input-text(ng-model="bots.current.active", ng-if="bots.current")
+  .row
+    .col-lg-2
+      //- h2
+      //-   tb-input-text(value="bots.current.name", on-save="save")
+      .panel.panel-primary
+        .panel-heading
+          h3.panel-title Status
+        .panel-body
+          tb-toggle#toggleActive(value="bots.current.active", change="startStop")
 
-  {{bots.current.id}}
-  {{bots.current.name}}
-  {{bots.current.market}}
-  {{bots.current.pair}}
-  {{bots.current.algo}}
-  {{bots.current.simu}}
-  {{bots.current.trades}}
-  {{bots.current.orders}}
-  {{bots.current.max_invest}}
-  {{bots.current.active}}
+    .col-lg-2
+      .panel.panel-primary
+        .panel-heading
+          h3.panel-title Market
+        .panel-body
+          tb-select#market(value="bots.current.market", options="availableMarket", on-save="save" disable-edit="bots.current.active")
+          tb-select#pair(value="bots.current.pair", options="availablePair", on-save="save" disable-edit="bots.current.active")
+

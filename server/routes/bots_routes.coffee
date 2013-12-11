@@ -17,3 +17,31 @@ exports.mount = (app) ->
         return res.locals.sendError err if err?
 
         res.send 200, bot.ToJSON()
+
+  app.put '/api/1/bots/:id', (req, res) ->
+    BotResource.Deserialize req.body, (err, bot) ->
+      return res.locals.sendError err if err?
+
+      bot.Save (err, bot) ->
+        return res.locals.sendError err if err?
+
+      res.send 200, bot.ToJSON()
+
+  app.get '/api/1/bots/:id/start', (req, res) ->
+    BotResource.Fetch req.params.id, (err, bot) ->
+      return res.locals.sendError err if err?
+
+      bot.Start()
+
+      res.send 200
+
+
+  app.get '/api/1/bots/:id/stop', (req, res) ->
+    BotResource.Fetch req.params.id, (err, bot) ->
+      return res.locals.sendError err if err?
+
+      bot.Stop()
+
+      res.send 200
+
+

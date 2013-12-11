@@ -9,6 +9,7 @@ config = new Settings require '../../settings/config'
 routes = require '../routes'
 assets = require '../../settings/assets.json'
 sockets = require '../socket/socket'
+processors = require '../processors'
 
 app = null
 
@@ -48,6 +49,8 @@ exports.makeServer = () ->
   # app.use express.compress()
 
   routes.mount app
+
+  processors.init()
 
   server = http.createServer app
 

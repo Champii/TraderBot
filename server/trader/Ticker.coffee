@@ -3,12 +3,12 @@ Settings = require 'settings'
 
 config = new Settings require '../../settings/config'
 Trader = require './Trader'
-windowManager = require './WindowManager'
+# windowManager = require './WindowManager'
 bus = require '../bus'
 
 
 printError = (err) ->
-  windowManager.PrintError err
+  # windowManager.PrintError err
 
 class Ticker
 
@@ -53,14 +53,14 @@ class Ticker
         @balances = data
       done null, data if done?
 
-      windowManager.PrintUserInfo @balances
+      # windowManager.PrintUserInfo @balances
 
   GetPairValue: (done) ->
     @public.ticker config.pair, (err, data) =>
       done() if done?
       return printError 'PairValue: ' + err if err
       @trader.Update data.ticker, @balances
-      windowManager.PrintPairValue data
+      # windowManager.PrintPairValue data
 
   GetLastTrade: (done) ->
     params =
@@ -69,7 +69,7 @@ class Ticker
     @trade.tradeHistory params, (err, data) =>
       done() if done?
       return printError 'TradeHistory: ' + err if err
-      windowManager.PrintLastTrade data
+      # windowManager.PrintLastTrade data
 
   GetOrders: (done) ->
     # windowManager.PrintError 'Entering getOrder'
@@ -78,9 +78,9 @@ class Ticker
       for k, i of data
         if i.timestamp_created < (new Date().getTime() / 1000 + 5)
           bus.emit 'cancelOrder', k, i
-        windowManager.PrintError k + ' ' + i.amount + ' ' + i.timestamp_created + ' ' + (new Date().getTime() / 1000 + 5)
+        # windowManager.PrintError k + ' ' + i.amount + ' ' + i.timestamp_created + ' ' + (new Date().getTime() / 1000 + 5)
 
-      windowManager.PrintActiveOrders data
+      # windowManager.PrintActiveOrders data
         # @queue.push =>
         #   @GetOrder done
       # printError 'Orders: ' + err if err
@@ -91,7 +91,7 @@ class Ticker
       windowManager.PrintError 'Canceled order ' + id
 
 
-  Run: ->
+  Run: (done) ->
     async.auto
       getUserInfo: (done) =>
         @GetUserInfo done
@@ -117,6 +117,9 @@ class Ticker
       @queue.push =>
         @GetOrders()
     , config.tick * 2
+
+    console.log 'Done'
+    done()
 
   Stop: ->
     clearInterval @tickerInt

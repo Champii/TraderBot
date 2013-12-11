@@ -13,3 +13,6 @@ exports.init = (server) ->
 
     bus.on 'newBot', (bot) ->
       socket.emit 'newBot', bot
+
+    bus.on 'updateBot', (bot) ->
+      socket.emit 'updateBot', bot

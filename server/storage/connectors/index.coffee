@@ -7,7 +7,7 @@ class Table
   constructor: (@name) ->
 
   Find: (id, done) ->
-    @FindWhere '*', id, done
+    @FindWhere '*', {id: id}, done
 
   FindWhere: (fields, where, done) ->
     @Select fields, where, {limit: 1}, (err, results) ->

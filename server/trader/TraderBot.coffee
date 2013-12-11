@@ -10,12 +10,17 @@ printError = (err) ->
 
 class TraderBot
 
+  id: null
   ticker: null
   public: null
   trade: null
   currentNonce: null
+  resource: null
 
-  constructor: ->
+  constructor: (@resource) ->
+    @id = @resource.id
+
+  Init: (done) ->
     @currentNonce = if fs.existsSync("nonce.json") then JSON.parse(fs.readFileSync("nonce.json")) else new Date().getTime()
     @public = new BTCE
     @trade = new BTCE config.api.key, config.api.secret, =>
@@ -24,8 +29,16 @@ class TraderBot
       return @currentNonce
 
     @ticker = new Ticker @public, @trade
+    done()
 
-  Run: ->
-    @ticker.Run()
+
+  Run: (done) ->
+    @Init (err) =>
+      return done err if err?
+      console.log 'Init Bot OK'
+      @ticker.Run done
+
+  Stop: (done) ->
+    @ticker.Stop done
 
 module.exports = TraderBot

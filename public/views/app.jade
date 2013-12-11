@@ -3,6 +3,7 @@ html
   head
     link(href="css/bootstrap.css" rel="stylesheet")
     link(href="css/sb-admin.css" rel="stylesheet")
+    link(href="css/switch.css" rel="stylesheet")
     link(href="css/fonts-awesome/css/font-awesome.min.css" rel="stylesheet")
 
 
@@ -24,7 +25,7 @@ html
               li.active
                 i.icon-file-alt Blank Page
 
-            tb-bots#bots
+            tb-bots#bots(ng-show="bots.current")
 
 
     script#bots-tpl(type="text/ng-template")
@@ -35,6 +36,12 @@ html
 
     script#input-text-tpl(type="text/ng-template")
       include templates/input-text
+
+    script#toggle-tpl(type="text/ng-template")
+      include templates/toggle
+
+    script#select-tpl(type="text/ng-template")
+      include templates/select
 
     script(src="/socket.io/socket.io.js" type="text/javascript")
     | !{cachify_js('/js/build/traderbot.min.js')}
