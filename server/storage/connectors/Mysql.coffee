@@ -42,7 +42,6 @@ class Mysql
       done null, results.insertId
 
   Update: (table, fields, where, done) ->
-    console.log fields, where
     query = 'update ' + table + ' set ? where ' + _(where).map((value, key) ->
       return mysql.escapeId(key) + ' = ' + mysql.escape(value)
     ).join(' and ')

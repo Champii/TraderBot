@@ -10,6 +10,7 @@ routes = require '../routes'
 assets = require '../../settings/assets.json'
 sockets = require '../socket/socket'
 processors = require '../processors'
+bus = require '../bus'
 
 app = null
 
@@ -51,6 +52,8 @@ exports.makeServer = () ->
   routes.mount app
 
   processors.init()
+
+  bus.emit 'tbInit'
 
   server = http.createServer app
 

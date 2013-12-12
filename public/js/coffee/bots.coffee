@@ -12,22 +12,21 @@ traderbot.service 'botsService', [
       $http.get('/api/1/bots')
         .success (data) =>
           @all = data
-          console.log data
-
         .error (data) ->
 
     @Add = (bot) ->
       $http.post('/api/1/bots', bot)
         .success (data) ->
-          console.log data
+          1
         .error (data) ->
+          1
 
     @Save = (bot) ->
       $http.put('/api/1/bots/' + bot.id, bot)
         .success (data) ->
-          console.log data
+          1
         .error (data) ->
-          console.log data
+          1
 
     @Init = ->
       @all = []
@@ -40,16 +39,12 @@ traderbot.service 'botsService', [
       @all.push bot
 
     socket.on 'updateBot', (bot) =>
-      console.log 'bot', bot
       toUpdate = _(@all).findWhere {id: bot.id}
 
-      console.log 'ToUpdate = ', toUpdate
       if toUpdate
         _(toUpdate).each (value, key) ->
           if toUpdate[key] isnt bot[key]
             toUpdate[key] = bot[key]
-        console.log 'Updated = ', toUpdate
-        $rootScope.$emit 'updateBot'
 
     $rootScope.$on '$routeChangeSuccess', =>
       changeTo = $routeParams.bot
@@ -61,6 +56,8 @@ traderbot.service 'botsService', [
 
       if !(@current?)
         $location.url '/'
+      else
+        $rootScope.$emit 'botChanged'
 
     return @
 ]
@@ -80,17 +77,15 @@ traderbot.directive 'tbBots', [
       link: (scope, element, attr) ->
         scope.bots = botsService
 
-        $rootScope.$on 'updateBot', ->
-          console.log scope.bots
-          # scope.$digest()
+        $rootScope.$on 'botChanged', ->
 
-        $http.get('/api/1/availableMarket')
-          .success (data) ->
-            scope.availableMarket = data
+          $http.get('/api/1/markets')
+            .success (data) ->
+              scope.availableMarket = data
 
-        $http.get('/api/1/availablePair')
-          .success (data) ->
-            scope.availablePair = data
+              $http.get('/api/1/markets/' + _(scope.availableMarket).findWhere({name: scope.bots.current.market}).id + '/pairs')
+                .success (data) ->
+                  scope.availablePair = data
 
         scope.startStop = ->
           status = if scope.bots.current.active then 'start' else 'stop'
@@ -103,6 +98,20 @@ traderbot.directive 'tbBots', [
         scope.save = ->
           console.log 'Save'
           scope.bots.Save scope.bots.current
+
+        scope.fetchPairs = ->
+          scope.save()
+          $http.get('/api/1/markets/' + _(scope.availableMarket).findWhere({name: scope.bots.current.market}).id + '/pairs')
+            .success (data) ->
+              scope.availablePair = data
+              existsAgain = _(scope.availablePair).chain()
+                                .pluck('pair')
+                                .contains(scope.bots.current.pair)
+                                .value()
+
+              if !existsAgain
+                scope.bots.current.pair = scope.availablePair[0].pair
+
 
     }]
 

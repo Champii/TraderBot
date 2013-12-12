@@ -38,7 +38,13 @@ class Trader
         lastIsBuy = false
       # windowManager.PrintError 'Current state : ' + lastIsBuy
 
-  RangeAlgo: (data, balances) ->
+  StaticRangeAlgo: (data, balances) ->
+    if ema < config.range.down
+      @Buy data, balances if !lastIsBuy
+    else if ema > config.range.up
+      @Sell data, balances if lastIsBuy
+
+  MovingRangeAlgo: (data, balances) ->
     if ema <= opEma - config.range.down
       @Sell data, balances if lastIsBuy
       opEma = ema
@@ -47,23 +53,6 @@ class Trader
       opEma = ema
 
     if ema > opEma and lastIsBuy
-      opEma = ema
-
-  MaketAlgo: (data, balances)->
-
-    diff = ema - opEma
-    if diff > 0
-      if lastIsBuy
-        thresholdDown = 0.05
-      else
-        @Buy data, balances
-      opEma = ema
-    else if diff < 0
-      gain = balances.funds.ltc * data.last - startUsd
-      if lastIsBuy and gain >= 0
-        @Sell data, balances
-      else
-        thresholdUp = 0.1
       opEma = ema
 
   Update: (data, balances) ->
@@ -91,8 +80,8 @@ class Trader
     # windowManager.PrintError 'Debug : ' + ema.toFixed(2) + ' ' + opEma
 
     if nbEma >= 10
-      @RangeAlgo data, balances if config.algo is 'range'
-      @MarketAlgo data, balances if config.algo is 'market'
+      @MovingRangeAlgo data, balances if config.algo is 'MovingRange'
+      @StaticRangeAlgo data, balances if config.algo is 'StaticRange'
 
 
     gain = balances.funds.ltc * data.last + balances.funds.usd - startUsd

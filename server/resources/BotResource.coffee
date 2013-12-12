@@ -57,6 +57,18 @@ class BotResource
   Stop: ->
     bus.emit 'botStop', @id
 
+  @StopAll: (done) ->
+    BotResource.List (err, bots) ->
+      return done err if err?
+
+      async.map bots, (bot, done) ->
+        if bot.active
+          bot.active = false
+          bot.Save done
+        else
+          done()
+      , done
+
   @Fetch: (id, done) ->
     botDb.Fetch id, (err, blob) =>
       # console.log 'bot fetch ', err, blob

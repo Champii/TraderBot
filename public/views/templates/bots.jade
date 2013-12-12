@@ -15,6 +15,6 @@ div
         .panel-heading
           h3.panel-title Market
         .panel-body
-          tb-select#market(value="bots.current.market", options="availableMarket", on-save="save" disable-edit="bots.current.active")
-          tb-select#pair(value="bots.current.pair", options="availablePair", on-save="save" disable-edit="bots.current.active")
+          tb-select#market(value="bots.current.market", options="availableMarket", key="name", on-save="fetchPairs" disable-edit="bots.current.active")
+          tb-select#pair(value="bots.current.pair", options="availablePair", key="pair", on-save="save" disable-edit="bots.current.active")
 

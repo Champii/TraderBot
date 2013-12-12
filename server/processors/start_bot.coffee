@@ -20,7 +20,7 @@ exports.init = ->
       newBot.Run (err) ->
         console.log 'Bot Running : ', id
         return console.error err if err?
-        bot.active = true
+        # bot.active = true
         bot.Save (err, bot) ->
           return console.error err if err
 
@@ -38,7 +38,8 @@ exports.init = ->
         return console.error err if err?
 
         botRes.active = false
+        botRes.Save (err) ->
+          return console.error err if err?
 
+          bots = _(bots).reject (bot) -> bot.id is id
 
-
-    bots = _(bots).reject (bot) -> bot.id is id

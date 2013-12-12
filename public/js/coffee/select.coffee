@@ -5,13 +5,13 @@ traderbot.directive 'tbSelect', [
     return {
       restrict: 'E'
 
-      replace: true
+      replace: false
 
       templateUrl: 'select-tpl'
 
       scope:
         disableEdit: '='
-        options: '='
+        optionsFn: '&options'
         onSave: '='
         value: '='
 
@@ -29,6 +29,9 @@ traderbot.directive 'tbSelect', [
             if scope.onSave
               scope.onSave scope.value
           else
+            scope.options = scope.optionsFn()
+            if attr.key
+              scope.options = _(scope.options).pluck(attr.key)
             scope.buttonLabel = 'Save'
           scope.isEditing = !scope.isEditing
 

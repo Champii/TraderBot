@@ -3,7 +3,8 @@ _ = require 'underscore'
 routes = [
   'api'
   'bots'
-  'market'
+  'markets'
+  'pairs'
   'api_404'
   'html']
   # 'api']
