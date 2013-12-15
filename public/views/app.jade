@@ -14,18 +14,18 @@ html
 
       #page-wrapper
 
-        .row
-          .col-lg-12
-            h1 Blank Page
-              small A Blank Slate
-            ol.breadcrumb
-              li
-                a(href="index.html")
-                  i.icon-dashboard Dashboard
-              li.active
-                i.icon-file-alt Blank Page
+        //- .row
+        //-   .col-lg-12
+        //-     h1 Blank Page
+        //-       small A Blank Slate
+        //-     ol.breadcrumb
+        //-       li
+        //-         a(href="index.html")
+        //-           i.icon-dashboard Dashboard
+        //-       li.active
+        //-         i.icon-file-alt Blank Page
 
-            tb-bots#bots(ng-show="bots.current")
+        tb-bots#bots(ng-show="bots.current")
 
 
     script#bots-tpl(type="text/ng-template")
@@ -42,6 +42,9 @@ html
 
     script#select-tpl(type="text/ng-template")
       include templates/select
+
+    script#chart-tpl(type="text/ng-template")
+      include templates/chart
 
     script(src="/socket.io/socket.io.js" type="text/javascript")
     | !{cachify_js('/js/build/traderbot.min.js')}

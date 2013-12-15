@@ -21,7 +21,7 @@ class Mysql
       f = fields.join(',')
 
     query = 'select ' + f + ' from ' + table
-    # console.log fields, where, options
+
     hasConditions = _(where).size() > 0 if where?
 
     if (hasConditions)
@@ -36,7 +36,6 @@ class Mysql
     query = 'insert into ' + table + ' set ?'
 
     connection.query query, fields, (err, results) ->
-      # console.log err, results, fields
       return done err if err?
 
       done null, results.insertId
@@ -55,11 +54,14 @@ class Mysql
     safeKey = mysql.escapeId key
 
     # normal case A = B
-    if !_.isArray value
+    if !_.isObject value
       return safeKey + ' = ' + mysql.escape value
+
+    op = if value.sup then ' > ' else ' < '
+    return safeKey + op + mysql.escape value.val
 
     # when passed an array, interpret as an "IN" statement
     # http://dev.mysql.com/doc/refman/5.0/en/comparison-operators.html#function_in
-    return safeKey + ' in (' + _(value).map((element) -> mysql.escape element).join(', ') + ')'
+    # return safeKey + ' in (' + _(value).map((element) -> mysql.escape element).join(', ') + ')'
 
 module.exports = new Mysql

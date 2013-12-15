@@ -1,4 +1,5 @@
 _ = require 'underscore'
+async = require 'async'
 
 bus = require '../bus'
 
@@ -13,6 +14,7 @@ tickers = []
 
 exports.init = ->
   bus.on 'startPubTickers', ->
+
     MarketResource.List (err, markets) ->
       return console.error err if err?
 

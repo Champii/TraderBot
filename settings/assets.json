@@ -11,6 +11,8 @@
     "/js/coffee/sidebar.js",
     "/js/coffee/input-text.js",
     "/js/coffee/toggle.js",
-    "/js/coffee/select.js"
+    "/js/coffee/select.js",
+    "/js/coffee/chart.js",
+    "/js/lib/highstock/highstock.src.js"
   ]
 }

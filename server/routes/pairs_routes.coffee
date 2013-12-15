@@ -10,7 +10,7 @@ exports.mount = (app) ->
 
       res.send 200, _(pairs).invoke 'ToJSON'
 
-  app.all '/api/1/markets/:market_id/pairs/:pair_id*', (req, res) ->
+  app.all '/api/1/markets/:market_id/pairs/:pair_id*', (req, res, next) ->
     PairResource.Fetch parseInt(req.params.pair_id, 10), (err, pair) ->
       return res.locals.sendError err if err?
 

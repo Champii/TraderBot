@@ -5,10 +5,14 @@ class MarketPairValuesResource
   constructor: (blob) ->
     @values = blob
 
-  @Add: (data, done) ->
-    marketPairValuesDb.Add data, done
+  @Add: (marketPairId, time, data, done) ->
+    marketPairValuesDb.Add
+      market_pair_id: marketPairId
+      time: time
+      value: data
+    , done
 
-  @FetchAll: (done) ->
-    marketPairValuesDb.FetchAll done
+  @FetchAll: (marketPairId, time, done) ->
+    marketPairValuesDb.FetchAll marketPairId, time, done
 
 module.exports = MarketPairValuesResource

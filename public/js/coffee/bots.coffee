@@ -1,4 +1,3 @@
-
 traderbot.service 'botsService', [
   '$rootScope'
   '$routeParams'
@@ -27,6 +26,16 @@ traderbot.service 'botsService', [
           1
         .error (data) ->
           1
+
+    @GetMarkets = (done) ->
+      $http.get('/api/1/markets')
+        .success (data) ->
+          return done null, data
+
+    @GetPairs = (marketId, done) ->
+      $http.get('/api/1/markets/' + marketId + '/pairs')
+        .success (data) ->
+          return done null, data
 
     @Init = ->
       @all = []
@@ -79,13 +88,19 @@ traderbot.directive 'tbBots', [
 
         $rootScope.$on 'botChanged', ->
 
-          $http.get('/api/1/markets')
-            .success (data) ->
-              scope.availableMarket = data
+          scope.bots.GetMarkets (err, markets) ->
+            scope.availableMarket = markets
+            scope.bots.GetPairs _(markets).findWhere({name: scope.bots.current.market}).id, (err, pairs) ->
+              scope.availablePair = pairs
 
-              $http.get('/api/1/markets/' + _(scope.availableMarket).findWhere({name: scope.bots.current.market}).id + '/pairs')
-                .success (data) ->
-                  scope.availablePair = data
+
+          # $http.get('/api/1/markets')
+          #   .success (data) ->
+          #     scope.availableMarket = data
+
+          #     $http.get('/api/1/markets/' + _(scope.availableMarket).findWhere({name: scope.bots.current.market}).id + '/pairs')
+          #       .success (data) ->
+          #         scope.availablePair = data
 
         scope.startStop = ->
           status = if scope.bots.current.active then 'start' else 'stop'

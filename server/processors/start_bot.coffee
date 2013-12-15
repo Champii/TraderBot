@@ -20,7 +20,7 @@ exports.init = ->
       newBot.Run (err) ->
         console.log 'Bot Running : ', id
         return console.error err if err?
-        # bot.active = true
+        bot.active = true
         bot.Save (err, bot) ->
           return console.error err if err
 

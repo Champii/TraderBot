@@ -16,7 +16,8 @@ class BtceTicker
       @ticker.ticker @pair, (err, data) =>
         return console.error err if err?
 
-        MarketPairValuesResource.Add {market_pair_id: id, value: JSON.stringify(data)}, (err) ->
+
+        MarketPairValuesResource.Add @id, data.ticker.server_time, JSON.stringify(data.ticker), (err) ->
           return console.error err if err?
 
     , 1000

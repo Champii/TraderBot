@@ -5,6 +5,7 @@ routes = [
   'bots'
   'markets'
   'pairs'
+  'charts'
   'api_404'
   'html']
   # 'api']
