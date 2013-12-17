@@ -1,4 +1,5 @@
 selectCount = 0
+editing = {editing: false}
 traderbot.directive 'tbSelect', [
   '$http'
   ($http) ->
@@ -17,6 +18,8 @@ traderbot.directive 'tbSelect', [
 
       link: (scope, element, attr) ->
 
+        scope.editing = editing
+
         scope.isEditing = false
 
         scope.buttonLabel = 'Edit'
@@ -28,11 +31,13 @@ traderbot.directive 'tbSelect', [
             scope.buttonLabel = 'Edit'
             if scope.onSave
               scope.onSave scope.value
+            scope.editing.editing = false
           else
             scope.options = scope.optionsFn()
             if attr.key
               scope.options = _(scope.options).pluck(attr.key)
             scope.buttonLabel = 'Save'
+            scope.editing.editing = true
           scope.isEditing = !scope.isEditing
 
     }
