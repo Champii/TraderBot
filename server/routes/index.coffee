@@ -2,13 +2,13 @@ _ = require 'underscore'
 
 routes = [
   'api'
+  'auth'
   'bots'
   'markets'
   'pairs'
   'charts'
   'api_404'
   'html']
-  # 'api']
 
 exports.mount = (app) ->
   _(routes).each (route) ->

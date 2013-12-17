@@ -5,6 +5,7 @@
     "/js/lib/underscore.js",
     "/js/lib/angular.min.js",
     "/js/lib/angular-route.min.js",
+    "/js/lib/highstock/highstock.src.js",
     "/js/coffee/index.js",
     "/js/coffee/socket.js",
     "/js/coffee/bots.js",
@@ -13,6 +14,17 @@
     "/js/coffee/toggle.js",
     "/js/coffee/select.js",
     "/js/coffee/chart.js",
-    "/js/lib/highstock/highstock.src.js"
+    "/js/coffee/users.js"
+  ],
+
+  "/js/build/signin.min.js": [
+    "/js/lib/bootstrap/jquery-1.10.2.js",
+    "/js/lib/bootstrap/jquery-1.10.2.js",
+    "/js/lib/bootstrap/bootstrap.js",
+    "/js/lib/underscore.js",
+    "/js/lib/angular.min.js",
+    "/js/lib/angular-route.min.js",
+    "/js/coffee/signin-form.js"
   ]
+
 }

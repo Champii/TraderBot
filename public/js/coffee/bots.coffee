@@ -5,7 +5,8 @@ traderbot.service 'botsService', [
   '$route'
   '$http'
   'socket'
-  ($rootScope, $routeParams, $location, $route, $http, socket) ->
+  'user'
+  ($rootScope, $routeParams, $location, $route, $http, socket, user) ->
 
     @Fetch = ->
       $http.get('/api/1/bots')
@@ -14,6 +15,8 @@ traderbot.service 'botsService', [
         .error (data) ->
 
     @Add = (bot) ->
+      console.log user
+      bot.user_id = user.id
       $http.post('/api/1/bots', bot)
         .success (data) ->
           1
@@ -21,6 +24,7 @@ traderbot.service 'botsService', [
           1
 
     @Save = (bot) ->
+      bot.user_id = user.id
       $http.put('/api/1/bots/' + bot.id, bot)
         .success (data) ->
           1

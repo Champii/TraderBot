@@ -4,6 +4,8 @@ exports.mount = (app) ->
   #   res.send 404
 
   app.get '*', (req, res) ->
-    res.render 'app'
+    if !(req.user?)
+      return res.render 'signin'
 
-
+    res.render 'app',
+      user: req.user.ToJSON()

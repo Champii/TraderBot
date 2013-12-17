@@ -6,7 +6,7 @@ codes =
   'internal_error': 500
 
 exports.mount = (app) ->
-  app.all '/api/*', (req, res, next) ->
+  app.all '*', (req, res, next) ->
     res.locals.sendError = (err) ->
       code = codes[err.status] or 500
       body = null
@@ -22,3 +22,8 @@ exports.mount = (app) ->
 
     next()
 
+  app.all '/api/*', (req, res, next) ->
+    if !(req.user?) or !(req.user.id?)
+      return res.locals.sendError {status: 403, message: 'Unauthorized'}
+
+    next()

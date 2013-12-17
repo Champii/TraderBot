@@ -1,7 +1,6 @@
 traderbot.directive 'tbSidebar', [
-  '$http'
   'botsService'
-  ($http, botsService) ->
+  (botsService) ->
     return {
       restrict: 'E'
 
@@ -21,6 +20,7 @@ traderbot.directive 'tbSidebar', [
 
         scope.addBot = ->
           scope.bots.Add {name: scope.botName}
+
 
     }]
 

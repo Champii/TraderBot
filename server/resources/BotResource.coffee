@@ -9,6 +9,7 @@ class BotResource
   constructor: (blob) ->
     if blob?
       @id = blob.id if blob.id?
+      @user_id = blob.user_id if blob.user_id?
       @name = blob.name if blob.name?
       @desc = blob.desc if blob.desc?
       @market = blob.market || 'btc-e'
@@ -37,6 +38,7 @@ class BotResource
 
   Serialize: ->
     id: @id
+    user_id: @user_id
     name: @name
     desc: @desc
     market: @market
@@ -58,30 +60,31 @@ class BotResource
     bus.emit 'botStop', @id
 
   @StopAll: (done) ->
-    BotResource.List (err, bots) ->
-      return done err if err?
+    done()
+  #   BotResource.List (err, bots) ->
+  #     return done err if err?
 
-      async.map bots, (bot, done) ->
-        if bot.active
-          bot.active = false
-          bot.Save done
-        else
-          done()
-      , done
+  #     async.map bots, (bot, done) ->
+  #       if bot.active
+  #         bot.active = false
+  #         bot.Save done
+  #       else
+  #         done()
+  #     , done
 
-  @Fetch: (id, done) ->
-    botDb.Fetch id, (err, blob) =>
-      # console.log 'bot fetch ', err, blob
+  @Fetch: (id, userId, done) ->
+    botDb.Fetch id, userId, (err, blob) ->
       return done err if err?
 
       BotResource.Deserialize blob, done
 
-  @List: (done) =>
-    botDb.List (err, ids) ->
-      # console.log 'bot list ', err, ids
+  @List: (userId, done) ->
+    botDb.List userId, (err, ids) ->
       return done err if err?
 
-      async.map _(ids).pluck('id'), BotResource.Fetch, done
+      async.map _(ids).pluck('id'), (id, done) ->
+        BotResource.Fetch id, userId, done
+      , done
 
   @Deserialize: (blob, done) ->
     done null, new BotResource blob

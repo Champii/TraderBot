@@ -4,6 +4,7 @@ Settings = require 'settings'
 exec = require('child_process').exec
 http = require 'http'
 coffeeMiddleware = require 'coffee-middleware'
+passport = require 'passport'
 
 config = new Settings require '../../settings/config'
 routes = require '../routes'
@@ -33,19 +34,20 @@ exports.makeServer = () ->
       root: path.join traderRoot, 'public'
       production: config.minify
 
-    # app.use require('connect-assets')(path.resolve traderRoot, 'public/js')
-    app.use express.static path.resolve traderRoot, '/public'
+    app.use express.cookieParser()
+    app.use express.bodyParser()
+    app.use express.session secret: 'keyboard cat'
+
+    app.use express.static path.resolve traderRoot, 'public'
+
+    app.use passport.initialize()
+    app.use passport.session()
+
+    app.use app.router
+
     app.set 'views', path.resolve traderRoot, 'public/views'
-    # app.engine '.html', require('ejs').__express
     app.engine '.jade', require('jade').__express
     app.set 'view engine', 'jade'
-
-
-  app.use(express.static(path.resolve(traderRoot, 'public')));
-
-  app.use express.bodyParser()
-
-  app.use app.router
 
   # app.use express.compress()
 

@@ -1,0 +1,16 @@
+html
+
+  head
+    link(href="css/bootstrap.css" rel="stylesheet")
+    link(href="css/sb-admin.css" rel="stylesheet")
+    link(href="css/switch.css" rel="stylesheet")
+    link(href="css/fonts-awesome/css/font-awesome.min.css" rel="stylesheet")
+
+    | !{cachify_js('/js/build/signin.min.js')}
+
+  body(style="background-color: #222222", ng-app="signin")
+    signin
+
+  script(id="signin-form-tpl", type="text/ng-template")
+    include templates/signin-form
+

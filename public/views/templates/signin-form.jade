@@ -1,0 +1,32 @@
+div
+  center
+    .well
+      h2 TraderBot
+
+    .well(style="background-color: #111111;margin-left: 40%;margin-right: 40%")
+      .well
+        input(type="text", name="username", placeholder="Username", ng-model="username")
+      .well
+        input(type="password", name="password", placeholder="Password", ng-model="password")
+
+      div(ng-hide="signin")
+        .well
+          input(type="password", name="password", placeholder="Confirm Password", ng-model="passwordConf")
+        .well
+          input(type="text", name="password", placeholder="Email", ng-model="email")
+
+      .well(ng-hide="signin")
+        input(type="submit", value="Sign Up", ng-click="register()")
+
+      .well(ng-show="signin")
+        input(type="submit", value="Log In", ng-click="login()")
+
+      a(ng-click="toggleSignup()", style="float: left", ng-show="signin") Signup
+      a(ng-click="toggleSignin()", style="float: left", ng-hide="signin") Signin
+
+      a(ng-click="passwordLost()", style="float: right") Password Lost
+
+    .well(ng-show="error.length", style="background-color: #660000")
+      {{error}}
+    .well(ng-show="message.length", style="background-color: #006600")
+      {{message}}
