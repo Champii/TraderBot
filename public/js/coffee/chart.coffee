@@ -33,7 +33,7 @@ traderbot.directive 'tbChart', [
             $http.get('/api/1/markets/' + market + '/pairs/' + pair + '/chart/' + lastTime)
               .success (data) ->
                 _(data).each (value, key) ->
-                  console.log key, value
+                  # console.log key, value
                   if serie?
                     serie.addPoint [value.time, value.value.last], false, false
                   else

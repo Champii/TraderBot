@@ -27,7 +27,7 @@ html
         //-       li.active
         //-         i.icon-file-alt Blank Page
 
-        tb-bots#bots(ng-show="bots.current")
+        tb-bots#bots(ng-if="bots.current")
 
 
     script#bots-tpl(type="text/ng-template")
@@ -50,6 +50,9 @@ html
 
     script#users-tpl(type="text/ng-template")
       include templates/users
+
+    script#trades-tpl(type="text/ng-template")
+      include templates/trades
 
     script(src="/socket.io/socket.io.js" type="text/javascript")
     | !{cachify_js('/js/build/traderbot.min.js')}

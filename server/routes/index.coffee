@@ -4,6 +4,7 @@ routes = [
   'api'
   'auth'
   'bots'
+  'trades'
   'markets'
   'pairs'
   'charts'

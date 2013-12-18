@@ -14,7 +14,8 @@
     "/js/coffee/toggle.js",
     "/js/coffee/select.js",
     "/js/coffee/chart.js",
-    "/js/coffee/users.js"
+    "/js/coffee/users.js",
+    "/js/coffee/trades.js"
   ],
 
   "/js/build/signin.min.js": [
