@@ -3,8 +3,6 @@ btce = require 'btc-e'
 
 bus = require '../bus'
 
-# Trader = require './Trader'
-
 class TraderBot
 
   id: null
@@ -19,48 +17,10 @@ class TraderBot
 
   constructor: (@resource) ->
     @id = @resource.id
-
-    @lastTen = []
-    @ema = 0
-    @lastEma = 0
-    @nbEma = 0
     @opEma = 0
 
-  StaticRangeAlgo: (data) ->
-    console.log data
-
-  Update: (data) ->
-    if @lastTen.length > 10
-      @lastTen.shift()
-    @lastTen.push data.last
-
-    sma = 0
-    if @nbEma < 10
-      @nbEma++
-      for value in @lastTen
-        sma += value
-
-      sma /= 10
-      @lastEma = sma
-
-    multi = 2 / 11
-
-    @ema = (data.last - @lastEma) * multi + @lastEma
-
-    if @opEma is 0 and @nbEma == 10
-      @opEma = @ema
-
-    # windowManager.PrintError 'Debug : ' + ema.toFixed(2) + ' ' + opEma
-
-    if @nbEma >= 10
-      @MovingRangeAlgo data if @resource.algo is 'movingRange'
-      @StaticRangeAlgo data if @resource.algo is 'staticRange'
-
-
-
-    # windowManager.PrintGain {startUsd: startUsd, gain: gain}
-
-    @lastEma = @ema
+  StaticRangeAlgo: (data, ema) ->
+    console.log data, ema
 
   Init: (done) ->
     @currentNonce = if fs.existsSync("nonce.json") then JSON.parse(fs.readFileSync("nonce.json")) else new Date().getTime()
@@ -71,8 +31,12 @@ class TraderBot
         return @currentNonce
 
     # console.log 'tickerBtce' + @resource.pair + 'TRIGGER'
-    bus.on 'tickerBtce' + @resource.pair, (data) =>
-      @Update data
+    bus.on 'tickerBtce' + @resource.pair, (data, ema) =>
+      if @opEma is 0
+        @opEma = ema
+
+      @MovingRangeAlgo data, ema if @resource.algo is 'movingRange'
+      @StaticRangeAlgo data, ema if @resource.algo is 'staticRange'
 
     done()
 
