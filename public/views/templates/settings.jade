@@ -1,0 +1,13 @@
+div
+  h2 Settings
+
+  .row
+    .col-lg-6(ng-repeat="value in user.settings.keys")
+      .panel.panel-primary
+        .panel-heading
+          h3.panel-title {{value.name}} Key/Secret
+        .panel-body
+          tb-input-text(value="value.key")
+          tb-input-text(value="value.secret")
+
+  button(ng-click="save()")

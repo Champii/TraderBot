@@ -3,11 +3,12 @@ traderbot.factory 'user', [
     __user
 ]
 
-traderbot.directive 'users', [
+traderbot.directive 'tbUsers', [
   '$http'
   '$window'
+  '$location'
   'user'
-  ($http, $window, user) ->
+  ($http, $window, $location, user) ->
     return {
 
       restrict: 'E'
@@ -24,6 +25,17 @@ traderbot.directive 'users', [
             .success (data) ->
               console.log 'Success'
               $window.location.href = '/'
+
+        scope.dashboard = ->
+          $location.url '/'
+
+
+        scope.settings = ->
+          $location.url '/settings/general'
+
+        scope.profile = ->
+          $location.url '/settings/profile'
+
 
     }
 ]

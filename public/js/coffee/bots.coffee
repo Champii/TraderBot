@@ -60,6 +60,11 @@ traderbot.service 'botsService', [
             toUpdate[key] = bot[key]
 
     $rootScope.$on '$routeChangeSuccess', =>
+      console.log $routeParams
+      if !($routeParams.bot?)
+        @current = null
+        return
+
       changeTo = $routeParams.bot
 
       if @current? and @current.name is changeTo

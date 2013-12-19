@@ -8,6 +8,8 @@
     "/js/lib/highstock/highstock.src.js",
     "/js/coffee/index.js",
     "/js/coffee/socket.js",
+    "/js/coffee/settings.js",
+    "/js/coffee/dashboard.js",
     "/js/coffee/bots.js",
     "/js/coffee/sidebar.js",
     "/js/coffee/input-text.js",

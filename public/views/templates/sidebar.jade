@@ -11,12 +11,12 @@ div
     div(class="collapse navbar-collapse navbar-ex1-collapse")
       ul.nav.navbar-nav.side-nav
         li
-          a(href="index.html")
+          a(href="", ng-click="dashboard()")
             i.fa.fa-dashboard
             | Dashboard
 
         li(ng-repeat="bot in bots.all")
-          a(href="/{{bot.name}}", ng-click="selectBot(bot.id)")
+          a(href="/bots/{{bot.name}}", ng-click="selectBot(bot.id)")
             | {{bot.name}}
 
         li
@@ -111,4 +111,4 @@ div
             li
               a(href="#") View All
 
-        users
+        tb-users

@@ -16,18 +16,11 @@ html
 
       #page-wrapper
 
-        //- .row
-        //-   .col-lg-12
-        //-     h1 Blank Page
-        //-       small A Blank Slate
-        //-     ol.breadcrumb
-        //-       li
-        //-         a(href="index.html")
-        //-           i.icon-dashboard Dashboard
-        //-       li.active
-        //-         i.icon-file-alt Blank Page
-
-        tb-bots#bots(ng-if="bots.current")
+        div(ng-if="params.settings")
+          tb-settings#settings
+        div(ng-if="!params.settings")
+          tb-bots#bots(ng-if="bots.current")
+          tb-dashboard#Dashboard(ng-if="!bots.current")
 
 
     script#bots-tpl(type="text/ng-template")
@@ -53,6 +46,12 @@ html
 
     script#trades-tpl(type="text/ng-template")
       include templates/trades
+
+    script#dashboard-tpl(type="text/ng-template")
+      include templates/dashboard
+
+    script#settings-tpl(type="text/ng-template")
+      include templates/settings
 
     script(src="/socket.io/socket.io.js" type="text/javascript")
     | !{cachify_js('/js/build/traderbot.min.js')}

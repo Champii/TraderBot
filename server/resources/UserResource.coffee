@@ -8,6 +8,7 @@ class UserResource
     @pass = blob.pass if blob.pass?
     @email = blob.email if blob.email?
     @group = blob.group || 1
+    @settings = blob.settings || @DefaultSettings()
 
   ValidatePassword: (password) ->
     return if password is @pass then true else false
@@ -29,9 +30,26 @@ class UserResource
     pass: @pass
     email: @email
     group: @group
+    settings: JSON.stringify @settings
 
   ToJSON: ->
-    @Serialize()
+    id: @id
+    login: @login
+    pass: @pass
+    email: @email
+    group: @group
+    settings: @settings
+
+
+  DefaultSettings: ->
+    keys: [{
+      name: 'btce'
+      key: ''
+      secret: ''},
+      {name: 'mtgox'
+      key: ''
+      secret: ''}]
+
 
   @Fetch: (id, done) ->
     userDb.Fetch id, (err, blob) ->
@@ -52,6 +70,8 @@ class UserResource
       async.map _(ids).pluck('id'), UserResource.Fetch, done
 
   @Deserialize: (blob, done) ->
+    blob.settings = JSON.parse blob.settings
+
     done null, new UserResource blob
 
 module.exports = UserResource
