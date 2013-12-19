@@ -5,10 +5,13 @@ class BotDb
 
   constructor: ->
 
-  Fetch: (id, userId, done) ->
-    bots.FindWhere '*', {id: id, user_id: userId}, done
+  Fetch: (id, done) ->
+    bots.FindWhere '*', {id: id}, done
 
-  List: (userId, done) ->
+  List: (done) ->
+    bots.Select 'id', {}, {}, done
+
+  ListByUser: (userId, done) ->
     bots.Select 'id', {user_id: userId}, {}, done
 
   Save: (blob, done) ->

@@ -7,4 +7,4 @@ exports.init = ->
     BotResource.StopAll (err) ->
       return console.error err if err?
 
-    bus.emit 'startPubTickers'
+      bus.emit 'startPubTickers'

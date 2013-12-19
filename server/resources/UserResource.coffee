@@ -8,7 +8,8 @@ class UserResource
     @pass = blob.pass if blob.pass?
     @email = blob.email if blob.email?
     @group = blob.group || 1
-    @settings = blob.settings || @DefaultSettings()
+    @settings = JSON.parse blob.settings if blob.settings?
+    @settings = @DefaultSettings() if !(blob.settings?)
 
   ValidatePassword: (password) ->
     return if password is @pass then true else false
@@ -70,8 +71,6 @@ class UserResource
       async.map _(ids).pluck('id'), UserResource.Fetch, done
 
   @Deserialize: (blob, done) ->
-    blob.settings = JSON.parse blob.settings
-
     done null, new UserResource blob
 
 module.exports = UserResource

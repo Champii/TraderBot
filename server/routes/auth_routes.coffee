@@ -16,6 +16,9 @@ passport.deserializeUser (id, done) ->
   UserResource.Fetch id, done
 
 exports.mount = (app) ->
+  app.get '/login', (req, res) ->
+    res.render 'signin'
+
   app.post '/login', passport.authenticate('local'), (req, res) ->
     res.redirect '/'
 

@@ -5,7 +5,8 @@ exports.mount = (app) ->
 
   app.get '*', (req, res) ->
     if !(req.user?)
-      return res.render 'signin'
+      return res.redirect '/login'
+      # return res.render 'signin'
 
     res.render 'app',
       user: req.user.ToJSON()

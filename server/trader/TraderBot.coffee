@@ -1,3 +1,4 @@
+fs = require 'fs'
 btce = require 'btc-e'
 
 bus = require '../bus'
@@ -14,6 +15,7 @@ class TraderBot
   ema: null
   lastEma: null
   gain: null
+  opEma: null
 
   constructor: (@resource) ->
     @id = @resource.id
@@ -21,56 +23,65 @@ class TraderBot
     @lastTen = []
     @ema = 0
     @lastEma = 0
-    @gain = 0
-    @startUsd = 0
+    @nbEma = 0
+    @opEma = 0
 
-  Update: ->
+  StaticRangeAlgo: (data) ->
+    console.log data
+
+  Update: (data) ->
     if @lastTen.length > 10
       @lastTen.shift()
     @lastTen.push data.last
 
     sma = 0
-    if nbEma < 10
-      nbEma++
-      startUsd = balances.funds.usd + balances.funds.ltc * data.last
+    if @nbEma < 10
+      @nbEma++
       for value in @lastTen
         sma += value
 
       sma /= 10
-      lastEma = sma
+      @lastEma = sma
 
     multi = 2 / 11
 
-    ema = (data.last - lastEma) * multi + lastEma
+    @ema = (data.last - @lastEma) * multi + @lastEma
 
-    if opEma is 0 and nbEma == 10
-      opEma = ema
+    if @opEma is 0 and @nbEma == 10
+      @opEma = @ema
 
     # windowManager.PrintError 'Debug : ' + ema.toFixed(2) + ' ' + opEma
 
-    if nbEma >= 10
-      @MovingRangeAlgo data, balances if config.algo is 'MovingRange'
-      @StaticRangeAlgo data, balances if config.algo is 'StaticRange'
+    if @nbEma >= 10
+      @MovingRangeAlgo data if @resource.algo is 'movingRange'
+      @StaticRangeAlgo data if @resource.algo is 'staticRange'
 
 
-    gain = balances.funds.ltc * data.last + balances.funds.usd - startUsd
 
     # windowManager.PrintGain {startUsd: startUsd, gain: gain}
 
-    lastEma = ema
+    @lastEma = @ema
 
   Init: (done) ->
     @currentNonce = if fs.existsSync("nonce.json") then JSON.parse(fs.readFileSync("nonce.json")) else new Date().getTime()
-    @trade = new BTCE config.api.key, config.api.secret, =>
-      @currentNonce++
-      fs.writeFile("nonce.json", @currentNonce);
-      return @currentNonce
+    if !@resource.simu
+      @trade = new btce @resource.api.key, @resource.api.secret, =>
+        @currentNonce++
+        fs.writeFile("nonce.json", @currentNonce);
+        return @currentNonce
 
-    bus.on 'tickerBtce' + @resource.pair, @Update
+    # console.log 'tickerBtce' + @resource.pair + 'TRIGGER'
+    bus.on 'tickerBtce' + @resource.pair, (data) =>
+      @Update data
+
+    done()
 
   Run: (done) ->
     @Init (err) =>
       return done err if err?
       done()
+
+  Stop: (done) ->
+    done()
 
 module.exports = TraderBot

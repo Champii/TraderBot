@@ -23,7 +23,7 @@ div
         .panel-heading
           h3.panel-title Simulation
         .panel-body
-          |lol
+          tb-toggle#toggleSimu(value="bots.current.simu", change="save")
 
     .col-lg-2
       .panel.panel-primary
@@ -47,21 +47,30 @@ div
         .panel-body
           tb-chart
 
-    .col-lg-3
-      .panel.panel-primary
-        .panel-heading
-          h3.panel-title Trades
-        .panel-body
-          tb-trades#trades
-
-    .col-lg-3
-      .panel.panel-primary
-        .panel-heading
-          h3.panel-title Orders
-        .panel-body
-          |lol
-
     .row
+      .col-lg-6
+        .panel.panel-primary
+          .panel-heading
+            h3.panel-title Balances
+          .panel-body
+            div(ng-repeat="(currency, balance) in bots.current.balances")
+              {{currency}}
+              tb-input-text(value="balance")
+
+      .col-lg-3
+        .panel.panel-primary
+          .panel-heading
+            h3.panel-title Trades
+          .panel-body
+            tb-trades#trades
+
+      .col-lg-3
+        .panel.panel-primary
+          .panel-heading
+            h3.panel-title Orders
+          .panel-body
+            |lol
+
       .col-lg-6
         .panel.panel-primary
           .panel-heading

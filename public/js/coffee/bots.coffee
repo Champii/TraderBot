@@ -96,6 +96,7 @@ traderbot.directive 'tbBots', [
         scope.bots = botsService
 
         $rootScope.$on 'botChanged', ->
+          console.log scope.bots.current
 
           scope.bots.GetMarkets (err, markets) ->
             scope.availableMarket = markets
