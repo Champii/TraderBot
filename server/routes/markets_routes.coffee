@@ -11,7 +11,6 @@ exports.mount = (app) ->
       res.send 200, _(markets).invoke 'ToJSON'
 
   app.all '/api/1/markets/:market_id*', (req, res, next) ->
-    console.log parseInt(req.params.market_id, 10)
     MarketResource.Fetch parseInt(req.params.market_id, 10), (err, market) ->
       return res.locals.sendError err if err?
 

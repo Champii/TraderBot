@@ -16,3 +16,6 @@ exports.init = (server) ->
 
     bus.on 'updateBot', (bot) ->
       socket.emit 'updateBot', bot
+
+    bus.on 'newTrade', (trade) ->
+      socket.emit 'newTrade', trade

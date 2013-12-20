@@ -27,6 +27,17 @@ class Mysql
     if (hasConditions)
       query += ' where ' + _(where).map(@_MakeSQLCondition).join(' and ');
 
+    if options?
+
+      if options.sortBy?
+        query += ' order by ' + options.sortBy
+
+        if options.reverse?
+          query += ' desc'
+
+      if options.limit?
+        query += ' limit ' + options.limit
+
     connection.query query, where, (err, rows) ->
       return done err if err?
 

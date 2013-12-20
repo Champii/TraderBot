@@ -15,7 +15,16 @@ class TradeResource
       @rate = blob.rate if blob.rate?
 
   Save: (done) ->
-    done()
+    exists = @id?
+
+    tradeDb.Save @Serialize(), (err, tradeId) =>
+      return done err if err?
+
+      if !exists
+        @id = tradeId
+        bus.emit 'newTrade', @Serialize()
+
+    done null, @
 
   Serialize: ->
     id: @id

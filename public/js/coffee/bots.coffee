@@ -95,6 +95,7 @@ traderbot.directive 'tbBots', [
       link: (scope, element, attr) ->
         scope.bots = botsService
 
+        scope.availableAlgo = ['staticRange', 'movingRange']
         $rootScope.$on 'botChanged', ->
           console.log scope.bots.current
 
@@ -121,7 +122,7 @@ traderbot.directive 'tbBots', [
               console.log 'Error'
 
         scope.save = ->
-          console.log 'Save'
+          console.log 'Save', scope.bots.current
           scope.bots.Save scope.bots.current
 
         scope.fetchPairs = ->

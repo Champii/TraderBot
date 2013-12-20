@@ -19,13 +19,23 @@ exports.mount = (app) ->
         res.send 200, bot.ToJSON()
 
   app.put '/api/1/bots/:id', (req, res) ->
-    BotResource.Deserialize req.body, (err, bot) ->
+    BotResource.Fetch req.params.id, (err, bot) ->
       return res.locals.sendError err if err?
+
+      _(req.body.algo_params).each (value, key) ->
+        req.body.algo_params[key] = parseFloat(req.body.algo_params[key])
+
+      _(req.body.balances).each (value, key) ->
+        req.body.balances[key] = parseFloat(req.body.balances[key])
+
+      console.log bot, req.body
+
+      _(bot).extend req.body
 
       bot.Save (err, bot) ->
         return res.locals.sendError err if err?
 
-      res.send 200, bot.ToJSON()
+        res.send 200, bot.ToJSON()
 
   app.get '/api/1/bots/:id/start', (req, res) ->
     BotResource.Fetch req.params.id, (err, bot) ->

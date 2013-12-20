@@ -21,7 +21,6 @@ class MarketPairValuesDb
           val: time
 
     where.market_pair_id = marketPairId
-    console.log where
     market_pair_values.Select '*', where, {orderBy: 'time'}, (err, all) ->
       return done err if err?
 

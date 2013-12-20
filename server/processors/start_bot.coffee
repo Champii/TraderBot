@@ -15,7 +15,7 @@ exports.init = ->
     BotResource.Fetch id, (err, bot) ->
       return console.error err if err?
 
-      newBot = new TraderBot bot
+      newBot = new TraderBot id
       console.log 'Bot Start : ', id
       newBot.Run (err) ->
         console.log 'Bot Running : ', id

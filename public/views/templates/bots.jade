@@ -30,14 +30,15 @@ div
         .panel-heading
           h3.panel-title Algo
         .panel-body
-          |lol
+          tb-select(value="bots.current.algo", options="availableAlgo", on-save="save", disable-edit="bots.current.active")
 
     .col-lg-4
       .panel.panel-primary
         .panel-heading
           h3.panel-title Algo Config
         .panel-body
-          |lol
+          tb-input-text(value="bots.current.algo_params.min", on-save="save", disable-edit="bots.current.active")
+          tb-input-text(value="bots.current.algo_params.max", on-save="save", disable-edit="bots.current.active")
 
   .row
     .col-lg-6
@@ -53,9 +54,8 @@ div
           .panel-heading
             h3.panel-title Balances
           .panel-body
-            div(ng-repeat="(currency, balance) in bots.current.balances")
-              {{currency}}
-              tb-input-text(value="balance")
+            tb-input-text(value="bots.current.balances.ltc", on-save="save", disable-edit="bots.current.active")
+            tb-input-text(value="bots.current.balances.usd", on-save="save", disable-edit="bots.current.active")
 
       .col-lg-3
         .panel.panel-primary

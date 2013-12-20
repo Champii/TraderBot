@@ -15,13 +15,22 @@ class BotResource
       @market = blob.market || 'btc-e'
       @pair = blob.pair || 'ltc_usd'
       @algo = blob.algo || 'staticRange'
+
+      if !(blob.algo_params?)
+        @algo_params = {}
+      else
+        @algo_params = if _(blob.algo_params).isString() then JSON.parse blob.algo_params else blob.algo_params
+
       @simu = blob.simu || true
       @trades = blob.trades || []
       @orders = blob.orders || []
       @max_invest = blob.max_invest || 0
       @active = blob.active || false
-      @balances = JSON.parse blob.balances if blob.balances?
-      @balances = @DefaultBalances() if !(blob.balances?)
+
+      if !(blob.balances?)
+        @balances = {}
+      else
+        @balances = if _(blob.balances).isString() then JSON.parse blob.balances else blob.balances
 
 
   DefaultBalances: ->
@@ -54,6 +63,7 @@ class BotResource
     market: @market
     pair: @pair
     algo: @algo
+    algo_params: JSON.stringify @algo_params
     simu: @simu
     max_invest: @max_invest
     active: @active
@@ -67,6 +77,7 @@ class BotResource
     market: @market
     pair: @pair
     algo: @algo
+    algo_params: @algo_params
     simu: @simu
     max_invest: @max_invest
     active: @active
@@ -110,6 +121,7 @@ class BotResource
       async.map _(ids).pluck('id'), BotResource.Fetch, done
 
   @Deserialize: (blob, done) ->
+    console.log blob
     done null, new BotResource blob
 
 module.exports = BotResource

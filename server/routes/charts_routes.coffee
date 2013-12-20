@@ -3,7 +3,6 @@ marketPairDb = require '../storage/MarketPairDb'
 
 exports.mount = (app) ->
   app.get '/api/1/markets/:market_id/pairs/:pair_id/chart/:time', (req, res) ->
-    console.log 'time', parseInt(req.params.time, 10)
     marketPairDb.GetId req.params.market_id, req.params.pair_id, (err, id) ->
       return res.locals.sendError err if err?
 
