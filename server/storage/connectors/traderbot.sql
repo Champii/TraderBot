@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: localhost
--- Généré le: Mar 17 Décembre 2013 à 17:32
+-- Généré le: Ven 20 Décembre 2013 à 16:12
 -- Version du serveur: 5.5.34-0ubuntu0.13.04.1
 -- Version de PHP: 5.4.9-4ubuntu2.3
 
@@ -33,38 +33,14 @@ CREATE TABLE IF NOT EXISTS `bots` (
   `desc` varchar(255) DEFAULT NULL,
   `market` varchar(255) NOT NULL DEFAULT 'btc-e',
   `pair` varchar(255) NOT NULL DEFAULT 'ltc_usd',
-  `algo` varchar(255) NOT NULL DEFAULT 'range',
+  `algo` varchar(255) NOT NULL DEFAULT 'staticRange',
+  `algo_params` varchar(4096) NOT NULL,
   `simu` tinyint(1) NOT NULL DEFAULT '1',
   `max_invest` int(11) NOT NULL DEFAULT '0',
   `active` tinyint(1) NOT NULL DEFAULT '0',
+  `balances` varchar(4096) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=27 ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `bot_orders`
---
-
-CREATE TABLE IF NOT EXISTS `bot_orders` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `bot_id` int(11) NOT NULL,
-  `order_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Structure de la table `bot_trades`
---
-
-CREATE TABLE IF NOT EXISTS `bot_trades` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `bot_id` int(11) NOT NULL,
-  `trade_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=37 ;
 
 -- --------------------------------------------------------
 
@@ -77,6 +53,14 @@ CREATE TABLE IF NOT EXISTS `markets` (
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+--
+-- Contenu de la table `markets`
+--
+
+INSERT INTO `markets` (`id`, `name`) VALUES
+(1, 'btc-e'),
+(2, 'mt-gox');
 
 -- --------------------------------------------------------
 
@@ -93,6 +77,15 @@ CREATE TABLE IF NOT EXISTS `market_pairs` (
   KEY `pair_id` (`pair_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
+--
+-- Contenu de la table `market_pairs`
+--
+
+INSERT INTO `market_pairs` (`id`, `market_id`, `pair_id`) VALUES
+(1, 1, 1),
+(2, 1, 2),
+(4, 2, 2);
+
 -- --------------------------------------------------------
 
 --
@@ -105,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `market_pair_values` (
   `time` int(11) NOT NULL,
   `value` varchar(4096) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4278 ;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -133,6 +126,14 @@ CREATE TABLE IF NOT EXISTS `pairs` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
 
+--
+-- Contenu de la table `pairs`
+--
+
+INSERT INTO `pairs` (`id`, `pair`) VALUES
+(1, 'ltc_usd'),
+(2, 'btc_usd');
+
 -- --------------------------------------------------------
 
 --
@@ -141,9 +142,10 @@ CREATE TABLE IF NOT EXISTS `pairs` (
 
 CREATE TABLE IF NOT EXISTS `trades` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `bot_id` int(11) NOT NULL,
   `order` varchar(255) NOT NULL,
-  `amount` int(11) NOT NULL,
-  `rate` int(11) NOT NULL,
+  `amount` float NOT NULL,
+  `rate` float NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
 
@@ -159,8 +161,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   `pass` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
   `group` int(11) NOT NULL,
+  `settings` varchar(4096) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=10 ;
 
 --
 -- Contraintes pour les tables exportées
@@ -170,8 +173,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Contraintes pour la table `market_pairs`
 --
 ALTER TABLE `market_pairs`
-  ADD CONSTRAINT `market_pairs_ibfk_2` FOREIGN KEY (`pair_id`) REFERENCES `pairs` (`id`),
-  ADD CONSTRAINT `market_pairs_ibfk_1` FOREIGN KEY (`market_id`) REFERENCES `markets` (`id`);
+  ADD CONSTRAINT `market_pairs_ibfk_1` FOREIGN KEY (`market_id`) REFERENCES `markets` (`id`),
+  ADD CONSTRAINT `market_pairs_ibfk_2` FOREIGN KEY (`pair_id`) REFERENCES `pairs` (`id`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
