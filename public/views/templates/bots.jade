@@ -37,7 +37,9 @@ div
         .panel-heading
           h3.panel-title Algo Config
         .panel-body
+          | min
           tb-input-text(value="bots.current.algo_params.min", on-save="save", disable-edit="bots.current.active")
+          | max
           tb-input-text(value="bots.current.algo_params.max", on-save="save", disable-edit="bots.current.active")
 
   .row

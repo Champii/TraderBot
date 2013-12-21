@@ -17,7 +17,7 @@ class BotResource
       @algo = blob.algo || 'staticRange'
 
       if !(blob.algo_params?)
-        @algo_params = {}
+        @algo_params = {min: 0, max: 0}
       else
         @algo_params = if _(blob.algo_params).isString() then JSON.parse blob.algo_params else blob.algo_params
 
@@ -28,7 +28,7 @@ class BotResource
       @active = blob.active || false
 
       if !(blob.balances?)
-        @balances = {}
+        @balances = {ltc: 0, usd: 0}
       else
         @balances = if _(blob.balances).isString() then JSON.parse blob.balances else blob.balances
 

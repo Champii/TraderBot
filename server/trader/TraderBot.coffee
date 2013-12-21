@@ -12,6 +12,7 @@ class TraderBot
   opEma: null
   lastIsBuy: false
   bot: null
+  callback: null
 
   constructor: (@id) ->
     @opEma = 0
@@ -103,13 +104,19 @@ class TraderBot
           return @currentNonce
 
       # console.log 'tickerBtce' + @resource.pair + 'TRIGGER'
-      bus.on 'tickerBtce' + @bot.pair, (data, ema) =>
+
+      if @callback?
+        return done {}
+
+      @callback = (data, ema) =>
         if @opEma is 0
           @opEma = ema
 
-        console.log ema, @opEma
+        console.log ema.toFixed(2), @opEma.toFixed(2)
         @MovingRangeAlgo data, ema if @bot.algo is 'movingRange'
         @StaticRangeAlgo data, ema if @bot.algo is 'staticRange'
+
+      bus.on 'tickerBtce' + @bot.pair, @callback
 
       done()
 
@@ -119,6 +126,10 @@ class TraderBot
       done()
 
   Stop: (done) ->
+    if !(@callback?)
+      return done {}
+
+    bus.removeListener 'tickerBtce' + @bot.pair, @callback
     done()
 
 module.exports = TraderBot
