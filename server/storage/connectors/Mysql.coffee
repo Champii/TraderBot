@@ -32,7 +32,7 @@ class Mysql
       if options.sortBy?
         query += ' order by ' + options.sortBy
 
-        if options.reverse?
+        if options.reverse
           query += ' desc'
 
       if options.limit?

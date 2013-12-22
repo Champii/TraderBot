@@ -16,6 +16,9 @@ traderbot.directive 'tbTrades', [
         # scope.trades = []
 
         socket.on 'newTrade', (trade) ->
+          if trade.bot_id isnt botsService.current.id
+            return
+
           if scope.trades.length > 10
             scope.trades.pop()
           scope.trades.unshift trade

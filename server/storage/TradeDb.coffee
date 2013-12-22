@@ -9,7 +9,7 @@ class TradeDb
     trades.FindWhere '*', {id: id, bot_id: botId}, done
 
   List: (botId, done) ->
-    trades.Select 'id', {bot_id: botId}, {limit: 10, orderBy: 'id', reverse: true}, done
+    trades.Select 'id', {bot_id: botId}, {limit: 10, sortBy: 'id', reverse: true}, done
 
   Save: (blob, done) ->
     trades.Save blob, done
