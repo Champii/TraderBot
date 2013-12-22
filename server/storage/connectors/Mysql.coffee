@@ -4,7 +4,7 @@ mysql = require 'mysql'
 connection = mysql.createConnection
   host     : 'localhost'
   user     : 'root'
-  password : '001127'
+  password : 'xie5Kie3'
   database : 'traderbot'
   typeCast: (field, next) ->
     if field.type is 'TINY' and field.length is 1
