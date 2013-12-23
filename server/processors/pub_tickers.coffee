@@ -27,4 +27,6 @@ exports.init = ->
               return console.error err if err?
 
               if market.name is 'btc-e'
-                tickers.push new BtceTicker id.id, pair.pair
+                ticker = new BtceTicker id.id, pair.pair
+                ticker.Start ->
+                tickers.push ticker
