@@ -23,7 +23,7 @@ class TraderBot
     else if ema < @bot.algo_params.min and !@lastIsBuy
       @Buy data
 
-  MovingRangeAlgo: (data, ema) ->
+  MovingRangeAlgo: (data, ema, volat) ->
     if ema <= @opEma - @bot.algo_params.min
       @Sell data if @lastIsBuy
       @opEma = ema
@@ -33,6 +33,16 @@ class TraderBot
 
     if ema > @opEma and @lastIsBuy
       @opEma = ema
+
+  VMA: (data, ema) ->
+    # Down
+    if data.last < ema
+      console.log 'Market downing'
+      @Sell data if @lastIsBuy
+    # Up
+    if data.last > ema
+      console.log 'Market Up'
+      @Buy data if !@lastIsBuy
 
   Sell: (data) ->
     console.log 'Sell', data, @bot
@@ -108,13 +118,14 @@ class TraderBot
       if @callback?
         return done {}
 
-      @callback = (data, ema) =>
+      @callback = (data, ema, volat) =>
         if @opEma is 0
           @opEma = ema
 
         console.log ema.toFixed(2), @opEma.toFixed(2)
-        @MovingRangeAlgo data, ema if @bot.algo is 'movingRange'
-        @StaticRangeAlgo data, ema if @bot.algo is 'staticRange'
+        @MovingRangeAlgo data, ema, volat if @bot.algo is 'movingRange'
+        # @VMA data, ema if @bot.algo is 'movingRange'
+        @StaticRangeAlgo data, ema, volat if @bot.algo is 'staticRange'
 
       bus.on 'tickerBtce' + @bot.pair, @callback
 
