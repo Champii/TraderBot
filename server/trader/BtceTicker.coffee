@@ -6,52 +6,89 @@ bus = require '../bus'
 
 MarketPairValuesResource = require '../resources/MarketPairValuesResource'
 
+histo = require '../../btcetrade.json'
+
+maxEma = 26
+
 class BtceTicker
 
   id: null
   ticker: null
   pair: null
 
-  lastTen: null
-  ema: null
-  lastEma: null
+  lastValues: null
   volatility: null
+
+  # macd
+  fastEma: null
+  slowEma: null
+  signal: null
+  lastSignals: null
+  macdHisto: null
 
   interval: null
 
   constructor: (@id, @pair) ->
     console.log 'constructor ticker', @pair, @id
 
-    @lastTen = []
-    @ema = 0
-    @lastEma = 0
-    @nbEma = 0
+    @lastValues = []
     @volatility = 0
+
+    @fastEma = 0
+    @slowEma = 0
+    @signal = 0
+
+    @lastSignals = []
+
+    @macdHisto = 0
 
     @ticker = new btce
 
-
-  UpdateEma: (data, done) ->
-    if @lastTen.length > 15
-      @lastTen.shift()
-    @lastTen.push data.ticker.last
-
+  CalcSma: (nb, array) ->
     sma = 0
-    if @nbEma < 15
-      @nbEma++
-      for value in @lastTen
+    if array.length < nb
+      for value in array[..nb]
         sma += value
 
-      sma /= 15
-      @lastEma = sma
+      sma /= nb
 
-    multi = 2 / 11
+    return sma
 
-    @ema = (data.ticker.last - @lastEma) * multi + @lastEma
+  CalcEma: (nb, data, last) ->
 
-    @lastEma = @ema
+    if @lastValues.length < nb
+      last = @CalcSma nb, @lastValues
 
-    console.log 'Spread = ', (data.ticker.buy - data.ticker.sell).toFixed 3 if @pair is 'ltc_usd'
+    multi = 2 / (nb + 1)
+
+    ema = (data.ticker.last * multi) + (last * (1 - multi))
+
+  CalcSignal: (nb, last) ->
+    if @lastValues.length > maxEma
+      if @lastSignals.length > nb
+        @lastSignals.shift()
+      @lastSignals.push @fastEma - @slowEma
+
+      if @lastSignals.length < nb
+        last = @CalcSma nb, @lastSignals
+
+      multi = 2 / (nb + 1)
+
+      ema = ((@fastEma - @slowEma) * multi) + (last * (1 - multi))
+
+
+  UpdateMACD: (data, done) ->
+    if @lastValues.length > maxEma
+      @lastValues.shift()
+    @lastValues.push data.ticker.last
+
+    @slowEma = @CalcEma 26, data, @slowEma
+    @fastEma = @CalcEma 12, data, @fastEma
+    @signal = @CalcSignal 9, @signal
+    @macdHisto = (@fastEma - @slowEma) - @signal
+
+    console.log 'fast =', @fastEma, 'slow =', @slowEma, 'signal =', @signal , 'macd =', @fastEma - @slowEma, 'macdHisto =', @macdHisto if @pair is 'ltc_usd'
+
     done()
 
   UpdateVolatility: (trades, done) ->
@@ -72,6 +109,15 @@ class BtceTicker
 
     done()
 
+  Simulate: (done) ->
+
+    for value in histo.USD.avg
+      ticker = {ticker: {last: value[1], buy: value[1], sell: value[1]}}
+      @UpdateMACD ticker, =>
+        console.log @lastValues
+        if @lastValues.length >= maxEma
+          bus.emit 'tickerBtce' + @pair, ticker.ticker, @macdHisto, @volatility
+
   Start: (done) ->
 
     if @interval?
@@ -90,24 +136,23 @@ class BtceTicker
           @UpdateVolatility results.trades, done]
 
         updateEma: ['trades', (done, results) =>
-          @UpdateEma results.pairValue, done]
+          @UpdateMACD results.pairValue, done]
 
         savePairValue: ['updateEma', (done, results) =>
           MarketPairValuesResource.Add @id, results.pairValue.ticker.server_time, JSON.stringify(results.pairValue.ticker), done]
 
         tick: ['savePairValue', (done, results) =>
-          if @nbEma >= 15
-            bus.emit 'tickerBtce' + @pair, results.pairValue.ticker, @ema, @volatility
+          if @lastValues.length >= maxEma
+            bus.emit 'tickerBtce' + @pair, results.pairValue.ticker, @macdHisto, @volatility
           done()]
 
       , (err, results) =>
         return console.error err if err?
-        console.log 'Volatility of ', @pair, ' = ', @volatility.toFixed(2), '. Ema = ', @ema if @pair is 'ltc_usd'
+        console.log 'Volatility of ', @pair, ' = ', @volatility.toFixed(2), '. Ema = ', @slowEma if @pair is 'ltc_usd'
 
-    , 1000
+    , 1000 * 60
 
     done()
-
 
   Stop: (done) ->
     if !(@interval?)

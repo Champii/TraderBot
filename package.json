@@ -2,6 +2,7 @@
   "name": "traderbot",
   "version": "0.0.1",
   "dependencies": {
+    "node-rest-client": "*",
     "settings": "*",
     "btc-e": "*",
     "coffee-script": "*",

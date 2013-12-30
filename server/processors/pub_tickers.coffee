@@ -28,5 +28,10 @@ exports.init = ->
 
               if market.name is 'btc-e'
                 ticker = new BtceTicker id.id, pair.pair
+                # if pair.pair is 'ltc_usd'
+                #   setTimeout =>
+                #     ticker.Simulate ->
+                #   , 20000
+                # else
                 ticker.Start ->
                 tickers.push ticker

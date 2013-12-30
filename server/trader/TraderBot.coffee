@@ -23,6 +23,13 @@ class TraderBot
     else if ema < @bot.algo_params.min and !@lastIsBuy
       @Buy data
 
+  MACD: (data, ema, volat) ->
+    if ema > 0 and !@lastIsBuy
+      @Buy data
+    else if ema < 0 and @lastIsBuy
+      @Sell data
+
+
   MovingRangeAlgo: (data, ema, volat) ->
     if ema <= @opEma - @bot.algo_params.min
       @Sell data if @lastIsBuy
@@ -123,7 +130,8 @@ class TraderBot
           @opEma = ema
 
         console.log ema.toFixed(2), @opEma.toFixed(2)
-        @MovingRangeAlgo data, ema, volat if @bot.algo is 'movingRange'
+        @MACD data, ema, volat if @bot.algo is 'movingRange'
+        # @MovingRangeAlgo data, ema, volat if @bot.algo is 'movingRange'
         # @VMA data, ema if @bot.algo is 'movingRange'
         @StaticRangeAlgo data, ema, volat if @bot.algo is 'staticRange'
 
@@ -132,9 +140,7 @@ class TraderBot
       done()
 
   Run: (done) ->
-    @Init (err) =>
-      return done err if err?
-      done()
+    @Init done
 
   Stop: (done) ->
     if !(@callback?)
