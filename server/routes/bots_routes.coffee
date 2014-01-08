@@ -1,5 +1,7 @@
 _ = require 'underscore'
 
+log = require '../util/Log'
+
 BotResource = require '../resources/BotResource'
 
 exports.mount = (app) ->
@@ -28,7 +30,7 @@ exports.mount = (app) ->
       _(req.body.balances).each (value, key) ->
         req.body.balances[key] = parseFloat(req.body.balances[key])
 
-      console.log bot, req.body
+      log.Error 'Route save : ', bot, req.body
 
       _(bot).extend req.body
 

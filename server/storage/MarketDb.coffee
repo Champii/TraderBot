@@ -8,6 +8,9 @@ class MarketDb
   Fetch: (id, done) ->
     markets.Find id, done
 
+  FetchByName: (name, done) ->
+    markets.FindWhere '*', {name: name}, done
+
   List: (done) ->
     markets.Select 'id', {}, {}, done
 

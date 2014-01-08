@@ -21,7 +21,19 @@ class MarketPairValuesDb
           val: time
 
     where.market_pair_id = marketPairId
-    market_pair_values.Select '*', where, {orderBy: 'time'}, (err, all) ->
+    market_pair_values.Select '*', where, {sortBy: 'time'}, (err, all) ->
+      return done err if err?
+
+      async.map all, (data, done) ->
+        data.value = JSON.parse data.value
+        done null, data
+      , done
+
+  ListLast: (marketPairId, nb, done) ->
+    where = {}
+
+    where.market_pair_id = marketPairId
+    market_pair_values.Select '*', where, {sortBy: 'id', reverse: true, limit: nb}, (err, all) ->
       return done err if err?
 
       async.map all, (data, done) ->

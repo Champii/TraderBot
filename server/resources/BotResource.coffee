@@ -1,8 +1,10 @@
 async = require 'async'
 _ = require 'underscore'
 
-botDb = require '../storage/BotDb'
 bus = require '../bus'
+log = require '../util/Log'
+
+botDb = require '../storage/BotDb'
 
 class BotResource
 
@@ -43,15 +45,17 @@ class BotResource
   Save: (done) ->
     exists = @id?
 
+    log.Error 'SAVE', @
+
     botDb.Save @Serialize(), (err, botId) =>
       return done err if err?
 
       if !exists
         @id = botId
-        bus.emit 'newBot', @Serialize()
+        bus.emit 'newBot', @ToJSON()
 
       else
-        bus.emit 'updateBot', @
+        bus.emit 'updateBot', @ToJSON()
 
       done null, @
 
@@ -110,7 +114,6 @@ class BotResource
   @List: (done) ->
     botDb.List (err, ids) ->
       return done err if err?
-      console.log err, ids
 
       async.map _(ids).pluck('id'), BotResource.Fetch, done
 
@@ -121,7 +124,6 @@ class BotResource
       async.map _(ids).pluck('id'), BotResource.Fetch, done
 
   @Deserialize: (blob, done) ->
-    console.log blob
     done null, new BotResource blob
 
 module.exports = BotResource

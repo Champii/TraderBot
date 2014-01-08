@@ -3,7 +3,7 @@ socket = require 'socket.io'
 bus = require '../bus'
 
 exports.init = (server) ->
-  io = socket.listen server
+  io = socket.listen server, log: false
 
   io.sockets.on 'connection', (socket)->
     hs = socket.handshake
@@ -19,3 +19,6 @@ exports.init = (server) ->
 
     bus.on 'newTrade', (trade) ->
       socket.emit 'newTrade', trade
+
+    bus.on 'newOrder', (trade) ->
+      socket.emit 'newOrder', trade

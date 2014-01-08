@@ -27,6 +27,12 @@ class MarketResource
 
       MarketResource.Deserialize blob, done
 
+  @FetchByName: (name, done) ->
+    marketDb.FetchByName name, (err, blob) =>
+      return done err if err?
+
+      MarketResource.Deserialize blob, done
+
   @List: (done) ->
     marketDb.List (err, ids) ->
       return done err if err?

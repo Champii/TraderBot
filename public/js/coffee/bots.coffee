@@ -53,7 +53,7 @@ traderbot.service 'botsService', [
 
     socket.on 'updateBot', (bot) =>
       toUpdate = _(@all).findWhere {id: bot.id}
-
+      console.log 'Update : ', bot
       if toUpdate
         _(toUpdate).each (value, key) ->
           if toUpdate[key] isnt bot[key]
@@ -115,6 +115,7 @@ traderbot.directive 'tbBots', [
 
         scope.startStop = ->
           status = if scope.bots.current.active then 'start' else 'stop'
+          console.log 'startStop', scope.bots.current
           $http.get('/api/1/bots/' + scope.bots.current.id + '/' + status)
             .success ->
               console.log 'Success'

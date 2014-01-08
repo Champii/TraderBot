@@ -31,7 +31,6 @@ exports.mount = (app) ->
       if !(err?) and existing?
         return res.locals.sendError {status: 500, message: 'Existing User'}
 
-      console.log req.body
       UserResource.Deserialize req.body, (err, user) ->
         return res.locals.sendError err if err?
 

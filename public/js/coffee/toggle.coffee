@@ -19,7 +19,7 @@ traderbot.directive 'tbToggle', [
         scope.changed = ->
           if scope.change
             $timeout ->
-              scope.change(scope.value);
+              scope.change scope.value
             , 500
 
     }

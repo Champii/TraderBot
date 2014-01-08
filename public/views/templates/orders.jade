@@ -1,0 +1,20 @@
+div
+
+  .table-responsive
+    table.table.table-bordered.table-hover.table-striped.tablesorter
+      thead
+        tr
+          th Order
+            i.fa.fa-sort
+          th Amount
+            i.fa.fa-sort
+          th Rate
+            i.fa.fa-sort
+          th Total
+            i.fa.fa-sort
+      tbody
+        tr(ng-repeat="order in orders", ng-class="{success: order.order == 'buy', danger: order.order == 'sell'}")
+          td {{order.order}}
+          td {{order.amount}}
+          td {{order.rate}}
+          td {{(order.amount * order.rate).toFixed(2)}}

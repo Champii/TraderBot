@@ -1,21 +1,28 @@
 fs = require 'fs'
 btce = require 'btc-e'
+Settings = require 'settings'
 
+config = new Settings require '../../settings/config'
 bus = require '../bus'
+log = require '../util/Log'
 
 BotResource = require '../resources/BotResource'
 TradeResource = require '../resources/TradeResource'
+
 class TraderBot
 
-  id: null
+  botId: null
+  marketPairId: null
   currentNonce: null
   opEma: null
   lastIsBuy: false
   bot: null
   callback: null
+  trade: null
 
-  constructor: (@id) ->
+  constructor: (@botId, @marketPairId) ->
     @opEma = 0
+
 
   StaticRangeAlgo: (data, ema) ->
     if ema > @bot.algo_params.max and @lastIsBuy
@@ -44,71 +51,120 @@ class TraderBot
   VMA: (data, ema) ->
     # Down
     if data.last < ema
-      console.log 'Market downing'
       @Sell data if @lastIsBuy
     # Up
     if data.last > ema
-      console.log 'Market Up'
       @Buy data if !@lastIsBuy
 
   Sell: (data) ->
-    console.log 'Sell', data, @bot
+    log.Log 'Sell', data, @bot
     BotResource.Fetch @bot.id, (err, bot) =>
-      return console.error err if err?
+      return log.Error err if err?
 
       @bot = bot
 
       pair = @bot.pair.split '_'
-      if @bot.simu
-        second = @bot.balances[pair[0]] * data.sell
+      second = @bot.balances[pair[0]] * data.sell
 
+      if @bot.simu
         TradeResource.Deserialize {bot_id: @bot.id, order: 'sell', amount: @bot.balances[pair[0]].toFixed(2), rate: data.sell.toFixed(2)}, (err, trade) ->
-          return console.error err if err?
+          return log.Error err if err?
 
           trade.Save (err) ->
-            return console.error err if err?
+            return log.Error err if err?
 
         @bot.balances[pair[0]] = 0
         @bot.balances[pair[1]] += second
         @lastIsBuy = false
 
         @bot.Save (err) ->
-          return console.error err if err?
-
+          return log.Error err if err?
 
       else
-        1
+        async.auto
+          userInfo: (done) => @trade.getInfo done
+
+          isOrder: ['userInfo', (done, results) =>
+            if results.userInfo.open_orders
+              return done 'Order in progress'
+            return done null, {}]
+
+          trade: ['isOrder', (done, results) =>
+            @trade.trade @bot.pair, 'sell', data.sell, @bot.balances[pair[0]], done]
+
+          saveOrder: ['trade', (done, results) =>
+            OrderResource.Deserialize {bot_id: @bot.id, order: 'sell', amount: @bot.balances[pair[0]], rate: data.sell}, (err, order) =>
+              return done err if err?
+
+              order.save done]
+
+        , (err, results) =>
+          return log.Errorif err?
+
+          @bot.balances[pair[0]] = 0
+          @bot.balances[pair[1]] += second
+          @lastIsBuy = false
+
+          @bot.Save (err) ->
+            return log.Error err if err?
+
 
   Buy: (data) ->
-    console.log 'Buy', data, @bot
+    log.Log 'Buy', data, @bot
     BotResource.Fetch @bot.id, (err, bot) =>
-      return console.error err if err?
+      return log.Error err if err?
 
       @bot = bot
 
       pair = @bot.pair.split '_'
+      first = @bot.balances[pair[1]] / data.buy
+
       if @bot.simu
-        first = @bot.balances[pair[1]] / data.buy
 
         TradeResource.Deserialize {bot_id: @bot.id, order: 'buy', amount: first.toFixed(2), rate: data.buy.toFixed(2)}, (err, trade) ->
-          return console.error err if err?
+          return log.Error err if err?
 
           trade.Save (err) ->
-            return console.error err if err?
+            return log.Error err if err?
 
         @bot.balances[pair[0]] += first
         @bot.balances[pair[1]] = 0
         @lastIsBuy = true
 
         @bot.Save (err) ->
-          return console.error err if err?
+          return log.Error err if err?
 
       else
-        1
+        async.auto
+          userInfo: (done) => @trade.getInfo done
+
+          isOrder: ['userInfo', (done, results) =>
+            if results.userInfo.open_orders
+              return done 'Order in progress'
+            return done null, {}]
+
+          trade: ['isOrder', (done, results) =>
+            @trade.trade @bot.pair, 'buy', data.sell, @bot.balances[pair[0]], done]
+
+          saveOrder: ['trade', (done, results) =>
+            OrderResource.Deserialize {bot_id: @bot.id, order: 'buy', amount: @bot.balances[pair[0]], rate: data.sell}, (err, order) =>
+              return done err if err?
+
+              order.save done]
+
+        , (err, results) =>
+          return log.Errorif err?
+
+          @bot.balances[pair[0]] += first
+          @bot.balances[pair[1]] = 0
+          @lastIsBuy = true
+
+          @bot.Save (err) ->
+            return log.Error err if err?
 
 
   Init: (done) ->
-    BotResource.Fetch @id, (err, bot) =>
+    BotResource.Fetch @botId, (err, bot) =>
       return done err if err?
 
       @bot = bot
@@ -120,7 +176,7 @@ class TraderBot
           fs.writeFile("nonce.json", @currentNonce);
           return @currentNonce
 
-      # console.log 'tickerBtce' + @resource.pair + 'TRIGGER'
+      # log.Log 'tickerBtce' + @resource.pair + 'TRIGGER'
 
       if @callback?
         return done {}
@@ -129,13 +185,13 @@ class TraderBot
         if @opEma is 0
           @opEma = ema
 
-        console.log ema.toFixed(2), @opEma.toFixed(2)
+        log.Log ema.toFixed(2), @opEma.toFixed(2)
         @MACD data, ema, volat if @bot.algo is 'movingRange'
         # @MovingRangeAlgo data, ema, volat if @bot.algo is 'movingRange'
         # @VMA data, ema if @bot.algo is 'movingRange'
         @StaticRangeAlgo data, ema, volat if @bot.algo is 'staticRange'
 
-      bus.on 'tickerBtce' + @bot.pair, @callback
+      bus.on 'ticker' + @bot.pair, @callback
 
       done()
 

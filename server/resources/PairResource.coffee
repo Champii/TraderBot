@@ -22,6 +22,12 @@ class PairResource
 
       PairResource.Deserialize blob, done
 
+  @FetchByName: (name, done) ->
+    pairDb.FetchByName name, (err, blob) =>
+      return done err if err?
+
+      PairResource.Deserialize blob, done
+
   @ListByMarket: (market, done) ->
     pairDb.ListByMarketId market.id, (err, pairIds) ->
       return done err if err?

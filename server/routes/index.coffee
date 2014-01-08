@@ -7,6 +7,7 @@ routes = [
   'dashboard'
   'bots'
   'trades'
+  'orders'
   'markets'
   'pairs'
   'charts'

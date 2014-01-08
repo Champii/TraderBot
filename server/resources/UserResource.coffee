@@ -16,7 +16,7 @@ class UserResource
 
   Save: (done) ->
     exists = @id?
-    console.log 'SaveUser, ', @Serialize()
+
     userDb.Save @Serialize(), (err, userId) =>
       return done err if err?
 

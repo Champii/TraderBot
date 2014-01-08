@@ -15,4 +15,7 @@ class MarketPairValuesResource
   @FetchAll: (marketPairId, time, done) ->
     marketPairValuesDb.FetchAll marketPairId, time, done
 
+  @ListLast: (marketPairId, nb, done) ->
+    marketPairValuesDb.ListLast marketPairId, nb, done
+
 module.exports = MarketPairValuesResource

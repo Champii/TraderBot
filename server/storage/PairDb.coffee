@@ -9,6 +9,9 @@ class PairDb
   Fetch: (id, done) ->
     pairs.Find id, done
 
+  FetchByName: (name, done) ->
+    pairs.FindWhere '*', {pair: name}, done
+
   List: (done) ->
     pairs.Select 'id', {}, {}, done
 
