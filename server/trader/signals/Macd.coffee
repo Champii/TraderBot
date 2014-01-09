@@ -1,11 +1,10 @@
 _ = require 'underscore'
 
 log = require '../../util/Log'
-bus = require '../../bus/Bus'
 
 MarketPairValuesResource = require '../../resources/MarketPairValuesResource'
 
-maxEma = 24
+maxEma = 26
 
 class Macd
 
@@ -32,10 +31,13 @@ class Macd
     @macdHisto = 0
 
 
-    MarketPairValuesResource.ListLast @marketPairId, maxEma + 9, (err, values) =>
+    MarketPairValuesResource.ListLast @marketPairId, maxEma * 2, (err, values) =>
       return Log.Error err if err?
 
-      _(values).each (value, key) => @NewValue value.value.last
+      reversed = []
+      _(values).each (value) => reversed.unshift value
+
+      _(reversed).each (value) => @NewValue value.value.last
 
 
   CalcSma: (nb, array) ->
@@ -82,7 +84,9 @@ class Macd
     @macdHisto = (@fastEma - @slowEma) - @signal
 
     log.Error 'Macd : ', value, @slowEma, @fastEma, @signal, @macdHisto
-    if (@lastSignals.lentgth > 9)
-      bus.emit 'macd' + @marketPairId, @macdHisto
+    if (@lastSignals.length > 9)
+      return @macdHisto
+
+    return null
 
 module.exports = Macd

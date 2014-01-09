@@ -30,10 +30,10 @@ class TraderBot
     else if ema < @bot.algo_params.min and !@lastIsBuy
       @Buy data
 
-  MACD: (data, ema, volat) ->
-    if ema > 0 and !@lastIsBuy
+  MACD: (data, macd) ->
+    if macd > 0 and !@lastIsBuy
       @Buy data
-    else if ema < 0 and @lastIsBuy
+    else if macd < 0 and @lastIsBuy
       @Sell data
 
 
@@ -99,7 +99,7 @@ class TraderBot
               order.save done]
 
         , (err, results) =>
-          return log.Errorif err?
+          return log.Error if err?
 
           @bot.balances[pair[0]] = 0
           @bot.balances[pair[1]] += second
@@ -107,7 +107,6 @@ class TraderBot
 
           @bot.Save (err) ->
             return log.Error err if err?
-
 
   Buy: (data) ->
     log.Log 'Buy', data, @bot
@@ -181,17 +180,16 @@ class TraderBot
       if @callback?
         return done {}
 
-      @callback = (data, ema, volat) =>
-        if @opEma is 0
-          @opEma = ema
+      @callback = (data, macd) =>
+        # if @opEma is 0
+        #   @opEma = ema
 
-        log.Log ema.toFixed(2), @opEma.toFixed(2)
-        @MACD data, ema, volat if @bot.algo is 'movingRange'
+        @MACD data, macd #if @bot.algo is 'movingRange'
         # @MovingRangeAlgo data, ema, volat if @bot.algo is 'movingRange'
         # @VMA data, ema if @bot.algo is 'movingRange'
-        @StaticRangeAlgo data, ema, volat if @bot.algo is 'staticRange'
+        # @StaticRangeAlgo data, ema, volat if @bot.algo is 'staticRange'
 
-      bus.on 'ticker' + @bot.pair, @callback
+      bus.on 'macd' + @marketPairId, @callback
 
       done()
 

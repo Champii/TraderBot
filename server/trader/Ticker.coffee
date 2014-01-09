@@ -4,6 +4,8 @@ log = require '../util/Log'
 
 Signals = require './signals/Signals'
 
+MarketPairValuesResource = require '../resources/MarketPairValuesResource'
+
 class Ticker
 
   marketPairId: null
@@ -54,18 +56,18 @@ class Ticker
           @signals.NewValue results.pairValue.ticker, results.trades
           done()]
 
-        savePairValue: ['updateEma', (done, results) =>
+        savePairValue: ['updateSignal', (done, results) =>
           MarketPairValuesResource.Add @marketPairId, results.pairValue.ticker.server_time, JSON.stringify(results.pairValue.ticker), done]
 
-        tick: ['savePairValue', (done, results) =>
-          if @lastValues.length >= maxEma
-            bus.emit 'ticker' + @marketPairId, results.pairValue.ticker
-          done()]
+        # tick: ['savePairValue', (done, results) =>
+        #   if @lastValues.length >= maxEma
+        #     bus.emit 'ticker' + @marketPairId, results.pairValue.ticker
+        #   done()]
 
       , (err, results) =>
         return log.Error err if err?
 
-        log.Log 'Volatility of ', @pair, ' = ', @volatility.toFixed(2), '. Ema = ', @slowEma if @pair is 'ltc_usd'
+        # log.Log 'Volatility of ', @pair, ' = ', @volatility.toFixed(2), '. Ema = ', @slowEma if @pair is 'ltc_usd'
 
     , 1000 * 60
 
